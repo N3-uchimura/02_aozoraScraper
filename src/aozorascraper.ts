@@ -191,6 +191,11 @@ app.on('ready', async () => {
 
   } catch (e: unknown) {
     logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
   }
 });
 
@@ -221,50 +226,86 @@ app.on('window-all-closed', () => {
 */
 // ready
 ipcMain.on("beforeready", async (event: any, __) => {
-  logger.info("app: beforeready app");
-  // language
-  const language = cacheMaker.get('language') ?? 'japanese';
-  // be ready
-  event.sender.send("ready", language);
+  try {
+    logger.info("app: beforeready app");
+    // language
+    const language = cacheMaker.get('language') ?? 'japanese';
+    // be ready
+    event.sender.send("ready", language);
+  } catch (e: unknown) {
+    logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
+  }
 });
 
 // config
 ipcMain.on('config', async (event: any, _) => {
-  logger.info('app: config app');
-  // language
-  const language = cacheMaker.get('language') ?? 'japanese';
-  // goto config page
-  await mainWindow.loadFile(path.join(globalRootPath, 'www', 'config.html'));
-  // language
-  event.sender.send('confready', language);
+  try {
+    logger.info('app: config app');
+    // language
+    const language = cacheMaker.get('language') ?? 'japanese';
+    // goto config page
+    await mainWindow.loadFile(path.join(globalRootPath, 'www', 'config.html'));
+    // language
+    event.sender.send('confready', language);
+  } catch (e: unknown) {
+    logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
+  }
 });
 
 // save
 ipcMain.on('save', async (event: any, arg: any) => {
-  logger.info('app: save config');
-  // language
-  const language: string = String(arg.language);
-  // txt path
-  const languageTxtPath: string = path.join(globalRootPath, "assets", "language.txt");
-  // make txt file
-  await writeFile(languageTxtPath, language);
-  // cache
-  cacheMaker.set('language', language);
-  // goto config page
-  await mainWindow.loadFile(path.join(globalRootPath, 'www', 'index.html'));
-  // language
-  event.sender.send('topready', language);
+  try {
+    logger.info('app: save config');
+    // language
+    const language: string = String(arg.language);
+    // txt path
+    const languageTxtPath: string = path.join(globalRootPath, "assets", "language.txt");
+    // make txt file
+    await writeFile(languageTxtPath, language);
+    // cache
+    cacheMaker.set('language', language);
+    // goto config page
+    await mainWindow.loadFile(path.join(globalRootPath, 'www', 'index.html'));
+    // language
+    event.sender.send('topready', language);
+  } catch (e: unknown) {
+    logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
+  }
 });
 
 // top
 ipcMain.on('top', async (event: any, _) => {
-  logger.info('app: top');
-  // goto config page
-  await mainWindow.loadFile(path.join(globalRootPath, 'www', 'index.html'));
-  // language
-  const language = cacheMaker.get('language') ?? '';
-  // language
-  event.sender.send('topready', language);
+  try {
+    logger.info('app: top');
+    // goto config page
+    await mainWindow.loadFile(path.join(globalRootPath, 'www', 'index.html'));
+    // language
+    const language = cacheMaker.get('language') ?? '';
+    // language
+    event.sender.send('topready', language);
+  } catch (e: unknown) {
+    logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
+  }
 });
 
 // exit
@@ -282,6 +323,11 @@ ipcMain.on('exitapp', async () => {
 
   } catch (e: unknown) {
     logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
   }
 });
 
@@ -417,6 +463,11 @@ ipcMain.on('scrape', async (event: any, _: any) => {
 
   } catch (e: unknown) {
     logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
 
   } finally {
     // close scraper
@@ -584,6 +635,11 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
 
   } catch (e: unknown) {
     logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
 
   } finally {
     // close scraper
@@ -776,6 +832,11 @@ ipcMain.on('titlescrape', async (event: any, _: any) => {
 
   } catch (e: unknown) {
     logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
 
   } finally {
     // close scraper
