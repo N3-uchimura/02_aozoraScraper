@@ -1,0 +1,32 @@
+{
+  "name": "net.numthree.aozorascraper",
+  "productName": "aozorascraper",
+  "version": "1.0.0",
+  "description": "Electron application aozorascraper",
+  "main": "build/aozorascraper.js",
+  "scripts": {
+    "build": "tsc && chcp 65001",
+    "start": "npm run build && electron ."
+  },
+  "keywords": [],
+  "author": {
+    "name": "numthree-uchimura (https://github.com/N3-uchimura/)",
+    "email": "uchimura@numthree.net"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "csv": "^6.4.1",
+    "electron-log": "^5.4.0",
+    "iconv-lite": "^0.6.3",
+    "node-cache": "^5.1.2",
+    "npm": "^11.5.1",
+    "puppeteer-core": "^24.15.0",
+    "sqlite3": "^5.1.7",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "electron": "^29.1.1"
+  },
+  "license": "MIT"
+}
