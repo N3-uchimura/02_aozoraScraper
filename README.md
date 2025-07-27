@@ -22,7 +22,7 @@ Windows10 ~
 5. All finished, csv files will be on "output" directory.
 
 ## Features
-+ You can change default language to English by pressing "Config" button and checkout "japanese".
++ You can change default language to English by pressing "Config" button and check off "japanese".
 
 ## Author
 N3-Uchimura

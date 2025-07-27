@@ -279,7 +279,7 @@ ipcMain.on('save', async (event: any, arg: any) => {
     // goto config page
     await mainWindow.loadFile(path.join(globalRootPath, 'www', 'index.html'));
     // language
-    event.sender.send('topready', language);
+    event.sender.send('ready', language);
   } catch (e: unknown) {
     logger.error(e);
     // error
@@ -314,8 +314,22 @@ ipcMain.on('top', async (event: any, _) => {
 ipcMain.on('exitapp', async () => {
   try {
     logger.info('ipc: exit mode');
+    // title
+    let questionTitle: string = '';
+    // message
+    let questionMessage: string = '';
+    // language
+    const language = cacheMaker.get('language') ?? 'japanese';
+    // japanese
+    if (language == 'japanese') {
+      questionTitle = '終了';
+      questionMessage = '終了していいですか';
+    } else {
+      questionTitle = 'exit';
+      questionMessage = 'exit?';
+    }
     // selection
-    const selected: number = dialogMaker.showQuetion('question', 'exit', 'exit? data is exposed');
+    const selected: number = dialogMaker.showQuetion('question', questionTitle, questionMessage);
 
     // when yes
     if (selected == 0) {
