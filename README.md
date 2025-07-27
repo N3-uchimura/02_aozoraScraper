@@ -15,7 +15,9 @@ Windows10 ~
    npm start
    ```
 3. Select mode.
-+ GetFiles: Get zip files which contain book's txt data. Download to chrome's default dir.
+<img width="457" height="146" alt="top" src="https://github.com/user-attachments/assets/e5c0f139-049f-4ee8-b862-c48e90f55134" />
++ GetFiles: Get zip files wh
+ich contain book's txt data. Download to chrome's default dir.
 + GetAuthors: Get all author data (name, birthday, bod).
 + GetTitles: Get all book's data (name, format, authorname, translator).
 4. Press "Scraping" button.
