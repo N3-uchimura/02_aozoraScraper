@@ -3,7 +3,7 @@
  *
  * class：ElScrape
  * function：scraping site with native chrome
- * updated: 2025/07/19
+ * updated: 2025/07/27
  **/
 
 'use strict';
@@ -368,6 +368,25 @@ export class Scrape {
           // resolved
           resolve(datas);
         }
+
+      } catch (e: unknown) {
+        Scrape.logger.error(e);
+        // reject
+        reject('error');
+      }
+    });
+  }
+
+  // allow multiple download
+  allowMultiDl(): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        Scrape.logger.debug('scrape: getUrl mode.');
+        // client
+        const client: any = await Scrape.page.target().createCDPSession();
+        // allow multiple download
+        await client.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: path.resolve(__dirname, '../..', 'output', 'zip') });
+        resolve();
 
       } catch (e: unknown) {
         Scrape.logger.error(e);

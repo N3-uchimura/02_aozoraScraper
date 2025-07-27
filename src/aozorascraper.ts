@@ -17,7 +17,7 @@ import { existsSync } from 'node:fs'; // file system
 import { readFile, writeFile } from 'node:fs/promises'; // filesystem
 import { BrowserWindow, app, ipcMain, Tray, Menu, nativeImage } from 'electron'; // electron
 import NodeCache from 'node-cache'; // for cache
-import { Scrape } from './class/ElScrapeCore0719'; // scraper
+import { Scrape } from './class/ElScrapeCore0727'; // scraper
 import ELLogger from './class/ElLogger'; // logger
 import Dialog from './class/ElDialog0721'; // dialog
 import CSV from './class/ElCsv0414'; // csvmaker
@@ -140,6 +140,8 @@ app.on('ready', async () => {
     const languageTxtPath: string = path.join(globalRootPath, 'assets', 'language.txt');
     // makedir
     await mkdirManager.mkDir('output');
+    // makedir
+    await mkdirManager.mkDirAll(['output/zip', 'output/csv']);
     // not exists
     if (!existsSync(languageTxtPath)) {
       logger.debug('app: making txt ...');
@@ -410,6 +412,8 @@ ipcMain.on('scrape', async (event: any, _: any) => {
                         await puppScraper.doWaitSelector(mySelectors.ZIPLINK_SELECTOR, 3000),
                         // download zip
                         await puppScraper.doClick(mySelectors.ZIPLINK_SELECTOR),
+                        // allow multiple dl
+                        await puppScraper.allowMultiDl(),
                         // wait for 3sec
                         await puppScraper.doWaitFor(3000),
                         // goback
@@ -570,7 +574,7 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
       await puppScraper.doWaitFor(1000);
     }
     // csv filename
-    const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `${fileName}.csv`);
+    const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, 'csv', `${fileName}.csv`);
     // finaljson
     let finalJsonArray: any[] = [];
     // language
@@ -761,7 +765,7 @@ ipcMain.on('titlescrape', async (event: any, _: any) => {
             }
           }
           // csv filename
-          const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `${fileName}_${key}行.csv`);
+          const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, 'csv', `${fileName}_${key}行.csv`);
           // finaljson
           let finalJsonArray: any[] = [];
           // all races
