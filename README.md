@@ -15,7 +15,7 @@ Windows10 ~
    npm start
    ```
 3. Select mode.
-<img width="457" height="146" alt="top" src="https://github.com/user-attachments/assets/e5c0f139-049f-4ee8-b862-c48e90f55134" />
+<img width="457" height="146" alt="top" src="https://github.com/user-attachments/assets/e5c0f139-049f-4ee8-b862-c48e90f55134" />  
 + GetFiles: Get zip files wh
 ich contain book's txt data. Download to chrome's default dir.
 + GetAuthors: Get all author data (name, birthday, bod).
