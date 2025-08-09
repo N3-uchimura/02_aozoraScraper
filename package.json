@@ -1,6 +1,6 @@
 {
-  "name": "net.numthree.aozorascraper",
-  "productName": "aozorascraper",
+  "name": "aozora-scraper",
+  "productName": "aozora-scraper",
   "version": "1.1.2-alpha.1",
   "description": "Electron application aozorascraper",
   "main": "build/aozorascraper.js",
