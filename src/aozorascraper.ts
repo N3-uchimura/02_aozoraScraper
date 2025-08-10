@@ -138,10 +138,12 @@ app.on('ready', async () => {
     let closeLabel: string = '';
     // txt path
     const languageTxtPath: string = path.join(globalRootPath, 'assets', 'language.txt');
+    // output path
+    const outputPath: string = path.join(globalRootPath, myConst.OUTPUT_PATH);
     // makedir
-    await mkdirManager.mkDir('output');
+    await mkdirManager.mkDir(outputPath);
     // makedir
-    await mkdirManager.mkDirAll(['output/zip', 'output/csv']);
+    await mkdirManager.mkDirAll([path.join(outputPath, 'zip'), path.join(outputPath, 'csv')]);
     // not exists
     if (!existsSync(languageTxtPath)) {
       logger.debug('app: making txt ...');
@@ -516,8 +518,8 @@ ipcMain.on('bookscrape', async (event: any, _: any) => {
           event.sender.send('total', childLength * 50);
           // now URL
           event.sender.send('statusUpdate', {
-            status: '',
-            target: `${key} 行`
+            status: `${key} 行`,
+            target: ``
           });
           logger.debug('bookscrape: doPageScrape mode');
 
@@ -586,11 +588,15 @@ ipcMain.on('bookscrape', async (event: any, _: any) => {
 
                 } catch (err1: unknown) {
                   logger.error(err1);
+                  // failCounter
+                  failCounter++;
 
                 } finally {
+                  // successcounter
+                  successCounter++;
                   // URL
                   event.sender.send('statusUpdate', {
-                    status: '',
+                    status: `${key} 行`,
                     target: `downloading No.${k - 1}`
                   });
                   // update total
@@ -704,6 +710,12 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
 
           } catch (err1: unknown) {
             logger.error(err1);
+          } finally {
+            // URL
+            event.sender.send('statusUpdate', {
+              status: `No.${j - 1}`,
+              target: `downloading Page.${i}`
+            });
           }
         }
         // set to finalArray
@@ -716,11 +728,6 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
         // fail
         failCounter++;
       } finally {
-        // URL
-        event.sender.send('statusUpdate', {
-          status: '',
-          target: `downloading Page.${i}`
-        });
         // update total
         event.sender.send('update', {
           success: successCounter,
