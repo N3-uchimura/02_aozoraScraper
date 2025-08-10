@@ -1,0 +1,59 @@
+{
+  "name": "aozora-scraper",
+  "productName": "aozora-scraper",
+  "version": "1.1.2",
+  "description": "Electron application aozorascraper",
+  "main": "build/aozorascraper.js",
+  "scripts": {
+    "build": "tsc && chcp 65001",
+    "start": "npm run build && electron .",
+    "build-win": "npm run build && electron-builder --win --x64"
+  },
+  "keywords": [],
+  "author": {
+    "name": "numthree-uchimura (https://github.com/N3-uchimura/)",
+    "email": "uchimura@numthree.net"
+  },
+  "dependencies": {
+    "csv": "^6.4.1",
+    "electron-log": "^5.4.0",
+    "iconv-lite": "^0.6.3",
+    "node-cache": "^5.1.2",
+    "puppeteer-core": "^24.15.0",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "@types/node": "^24.1.0",
+    "electron": "^29.1.1",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "net.numthree.aozorascraper",
+    "productName": "aozorascraper",
+    "files": [
+      "build/**/*",
+      "package.json",
+      "!dist/**/*",
+      "!src/**/*",
+      "!.gitignore",
+      "!.vscode"
+    ],
+    "extraResources": [
+      "assets",
+      "www/**/*"
+    ],
+    "squirrelWindows": {},
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "license": "MIT"
+}
