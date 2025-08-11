@@ -26,7 +26,7 @@ Windows10 ~
 - GetTitles: Get all book's data (name, format, authorname, translator).
 
 4. Press "Scraping" button.
-5. All finished, csv files will be on "output" directory.
+5. All finished, csv files will be on "resources/output/csv" directory.
 
 ## Features
 

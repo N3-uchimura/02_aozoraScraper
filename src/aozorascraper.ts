@@ -141,9 +141,7 @@ app.on('ready', async () => {
     // output path
     const outputPath: string = path.join(globalRootPath, myConst.OUTPUT_PATH);
     // makedir
-    await mkdirManager.mkDir(outputPath);
-    // makedir
-    await mkdirManager.mkDirAll([path.join(outputPath, 'zip'), path.join(outputPath, 'csv')]);
+    await mkdirManager.mkDirAll([outputPath, path.join(outputPath, 'csv')]);
     // not exists
     if (!existsSync(languageTxtPath)) {
       logger.debug('app: making txt ...');
