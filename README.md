@@ -22,7 +22,7 @@ Windows10 ~
 
 - GetFiles: Get zip files which contain book's txt data. Download to chrome's default dir.
 - GetBooks: Get all book data (name, nameruby).
-- GetAuthors: Get all author data (name, birthday, bod).
+- GetAuthors: Get all author data (name, birthday, bod, about).
 - GetTitles: Get all book's data (name, format, authorname, translator).
 
 4. Select target 'kana'.
