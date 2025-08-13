@@ -25,6 +25,11 @@ Windows10 ~
 - GetAuthors: Get all author data (name, birthday, bod).
 - GetTitles: Get all book's data (name, format, authorname, translator).
 
+3. Select target 'kana'.
+
+- 'all': Get all data.
+- others: Get only target 'kana'.
+
 4. Press "Scraping" button.
 5. All finished, csv files will be on "resources/output/csv" directory.
 
