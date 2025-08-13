@@ -23,6 +23,14 @@
       <input type="radio" name="mode" value="title" onchange="radioChanged(this.value)"><label id="gettitle"
         for="gettitle">GetTitle</label>
     </div>
+    <div id="startnum_area" class="number01 display-none">
+      <h3 id="startnumHead">Start number (1-2410)</h3>
+      <input id="startnum" type="number" min="1" max="2410" value="1">
+    </div>
+    <div id="endnum_area" class="number01 display-none">
+      <h3 id="endnumHead">End number (2-2410)</h3>
+      <input id="endnum" type="number" min="2" max="2410" value="100">
+    </div>
     <div id="select_en" class="cp_ipselect02">
       <select id="starten" name="start">
         <option value="all">all</option>
@@ -87,6 +95,8 @@
     const GETBOOKS_STR_JA = '作品取得';
     const GETAUTHORS_STR_JA = '著者取得';
     const GETTITLES_STR_JA = 'タイトル取得';
+    const STARTNUM_STR_JA = '開始位置(1-2410)';
+    const ENDNUM_STR_JA = '終了位置(2-2410)';
     const CONFIG_STR_JA = '設定';
     const SUCCESS_STR_JA = '成功:';
     const FAIL_STR_JA = '失敗:';
@@ -99,6 +109,8 @@
     const GETBOOKS_STR_EN = 'GetBooks';
     const GETAUTHORS_STR_EN = 'GetAuthors';
     const GETTITLES_STR_EN = 'GetTitles';
+    const STARTNUM_STR_EN = 'Start number (1-2410)';
+    const ENDNUM_STR_EN = 'End number (2-2410)';
     const CONFIG_STR_EN = 'Config';
     const SUCCESS_STR_EN = 'success:';
     const FAIL_STR_EN = 'fail:';
@@ -108,6 +120,12 @@
     const maintitleDom = document.getElementById("maintitle");
     const selectJaDom = document.getElementById("select_ja");
     const selectEnDom = document.getElementById("select_en");
+    const startNumDom = document.getElementById("startnum");
+    const endNumDom = document.getElementById("endnum");
+    const startAreaNumDom = document.getElementById("startnum_area");
+    const endAreaNumDom = document.getElementById("endnum_area");
+    const startHeadNumDom = document.getElementById("startnumHead");
+    const endHeadNumDom = document.getElementById("endnumHead");
     const startJaDom = document.getElementById("startja");
     const startEnDom = document.getElementById("starten");
     const scrapeDom = document.getElementById('scraping');
@@ -263,6 +281,8 @@
       try {
         // initialize form
         if (value === 'author') {
+          startAreaNumDom.classList.remove("display-none");
+          endAreaNumDom.classList.remove("display-none");
           // japanese
           if (globalLanguage == 'japanese') {
             selectJaDom.classList.add("display-none");
@@ -270,6 +290,8 @@
             selectEnDom.classList.add("display-none");
           }
         } else {
+          startAreaNumDom.classList.add("display-none");
+          endAreaNumDom.classList.add("display-none");
           // japanese
           if (globalLanguage == 'japanese') {
             selectJaDom.classList.remove("display-none");
@@ -311,6 +333,8 @@
         getbookDom.innerHTML = GETBOOKS_STR_JA;
         getauthorDom.innerHTML = GETAUTHORS_STR_JA;
         gettitleDom.innerHTML = GETTITLES_STR_JA;
+        startHeadNumDom.innerHTML = STARTNUM_STR_JA;
+        endHeadNumDom.innerHTML = ENDNUM_STR_JA;
         scrapeButtonDom.innerHTML = SCRAPING_STR_JA;
         configDom.innerHTML = CONFIG_STR_JA;
         configButtonDom.innerHTML = CONFIG_STR_JA;
@@ -332,6 +356,8 @@
         getbookDom.innerHTML = GETBOOKS_STR_EN;
         getauthorDom.innerHTML = GETAUTHORS_STR_EN;
         gettitleDom.innerHTML = GETTITLES_STR_EN;
+        startHeadNumDom.innerHTML = STARTNUM_STR_EN;
+        endHeadNumDom.innerHTML = ENDNUM_STR_EN;
         scrapeButtonDom.innerHTML = SCRAPING_STR_EN;
         configDom.innerHTML = CONFIG_STR_EN;
         configButtonDom.innerHTML = CONFIG_STR_EN;

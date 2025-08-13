@@ -11,21 +11,22 @@ body {
 }
 
 h1 {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   color: #fff;
   margin: 10px 0;
   padding: 5px 0;
   background-color: #134A63;
 }
 
-h2 {
+h3 {
+  font-size: 0.9rem;
   margin: 10px 0 0 0;
   color: #134A63;
   font-weight: bolder;
 }
 
 p {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: bold;
   padding: 10px;
   margin-top: 10px;

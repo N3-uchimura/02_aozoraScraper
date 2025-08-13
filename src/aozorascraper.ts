@@ -87,7 +87,7 @@ const createWindow = (): void => {
     mainWindow.once('ready-to-show', () => {
       // dev mode
       if (!app.isPackaged) {
-        mainWindow.webContents.openDevTools();
+        //mainWindow.webContents.openDevTools();
       }
     });
 
@@ -682,8 +682,8 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
     logger.debug('authorscrape: doPageScrape mode');
 
     // for loop
-    const nums: number[] = makeNumberRange(1, myNums.MAX_AUTHORS);
-
+    //const nums: number[] = makeNumberRange(1, myNums.MAX_AUTHORS);
+    const nums: number[] = makeNumberRange(870, 880);
     // loop
     for await (const i of nums) {
       try {
@@ -800,7 +800,7 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
         tmpObj.roman = author[3];
         tmpObj.birth = author[4];
         tmpObj.bod = author[5];
-        tmpObj.about = author[5];
+        tmpObj.about = author[6];
         // set to json
         finalJsonArray.push(tmpObj);
       });
