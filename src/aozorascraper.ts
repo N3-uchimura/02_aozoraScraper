@@ -682,8 +682,8 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
     logger.debug('authorscrape: doPageScrape mode');
 
     // for loop
-    //const nums: number[] = makeNumberRange(1, myNums.MAX_AUTHORS);
-    const nums: number[] = makeNumberRange(870, 880);
+    const nums: number[] = makeNumberRange(1, myNums.MAX_AUTHORS);
+
     // loop
     for await (const i of nums) {
       try {
