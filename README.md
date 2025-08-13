@@ -25,11 +25,10 @@ Windows10 ~
 - GetAuthors: Get all author data (name, birthday, bod, about).
 - GetTitles: Get all book's data (name, format, authorname, translator).
 
-4.
+4. Set options.  
    1. Select target 'kana' (exept for GetAuthors).
    - 'all': Get all data.
    - others: Get only target 'kana'.
-
    2. Select min and max for scraping.
       
 5. Press "Scraping" button.
