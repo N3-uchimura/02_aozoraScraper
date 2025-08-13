@@ -35,10 +35,18 @@ footer {
   font-size: 0.8rem;
 }
 
+.display-none {
+  display: none;
+}
+
 .operation_area {
   margin: 60px 0;
 }
 
 .config_area {
   margin: 30px 0;
+}
+
+#scraping_button {
+  margin: 20px 0 0;
 }

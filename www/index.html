@@ -14,10 +14,46 @@
   <div class="operation_area">
     <h3 id="scraping">Scraping</h3>
     <div>
-      <input type="radio" name="mode" value="file" checked><label id="getfile" for="getfile">GetFile</label>
-      <input type="radio" name="mode" value="book"><label id="getbook" for="getbook">GetBook</label>
-      <input type="radio" name="mode" value="author"><label id="getauthor" for="getauthor">GetAuthor</label>
-      <input type="radio" name="mode" value="title"><label id="gettitle" for="gettitle">GetTitle</label>
+      <input type="radio" name="mode" value="file" onchange="radioChanged(this.value)" checked><label id="getfile"
+        for="getfile">GetFile</label>
+      <input type="radio" name="mode" value="book" onchange="radioChanged(this.value)"><label id="getbook"
+        for="getbook">GetBook</label>
+      <input type="radio" name="mode" value="author" onchange="radioChanged(this.value)"><label id="getauthor"
+        for="getauthor">GetAuthor</label>
+      <input type="radio" name="mode" value="title" onchange="radioChanged(this.value)"><label id="gettitle"
+        for="gettitle">GetTitle</label>
+    </div>
+    <div id="select_en" class="cp_ipselect02">
+      <select id="starten" name="start">
+        <option value="all">all</option>
+        <option value="a">a</option>
+        <option value="ka">ka</option>
+        <option value="sa">sa</option>
+        <option value="ta">ta</option>
+        <option value="na">na</option>
+        <option value="ha">ha</option>
+        <option value="ma">ma</option>
+        <option value="ya">ya</option>
+        <option value="ra">ra</option>
+        <option value="wa">wa</option>
+        <option value="a-z">a-z</option>
+      </select>
+    </div>
+    <div id="select_ja" class="cp_ipselect02">
+      <select id="startja" name="start">
+        <option value="all">全</option>
+        <option value="a">あ</option>
+        <option value="ka">か</option>
+        <option value="sa">さ</option>
+        <option value="ta">た</option>
+        <option value="na">な</option>
+        <option value="ha">は</option>
+        <option value="ma">ま</option>
+        <option value="ya">や</option>
+        <option value="ra">ら</option>
+        <option value="wa">わ</option>
+        <option value="a-z">a-z</option>
+      </select>
     </div>
     <button id="scraping_button" class="button-g button-wide" value="scraping" onclick="gotoScrape();">Scraping</button>
   </div>
@@ -68,8 +104,12 @@
     const FAIL_STR_EN = 'fail:';
     const STATUS_STR_EN = 'status:';
     const EXIT_STR_EN = 'Exit';
-    /// doms
+    // doms
     const maintitleDom = document.getElementById("maintitle");
+    const selectJaDom = document.getElementById("select_ja");
+    const selectEnDom = document.getElementById("select_en");
+    const startJaDom = document.getElementById("startja");
+    const startEnDom = document.getElementById("starten");
     const scrapeDom = document.getElementById('scraping');
     const getfileDom = document.getElementById('getfile');
     const getbookDom = document.getElementById('getbook');
@@ -88,6 +128,8 @@
     const statusHeadDom = document.getElementById('statushead');
     const statusDom = document.getElementById('status');
     const exitButtonDom = document.getElementById('exit_button');
+    /// variables
+    let globalLanguage = 'japanese'
 
     /// ipc
     // before ready
@@ -147,37 +189,46 @@
     // start scraping
     const gotoScrape = () => {
       try {
+        // start
+        let tmpStart = '';
         // initialize form
         successDom.innerHTML = '';
         failDom.innerHTML = '';
         successtotalDom.innerHTML = '';
         failtotalDom.innerHTML = '';
-        // get selected
+        // get radio
         const value = document.querySelector("input[name='mode']:checked").value;
+        // get select
+        if (globalLanguage == 'japanese') {
+          tmpStart = startJaDom.value;
+        } else {
+          tmpStart = startEnDom.value;
+        }
+
         // mode switch
         switch (value) {
           // file mode
           case "file":
             // bookscrape
-            window.api.send('download');
+            window.api.send('download', tmpStart);
             break;
 
           // book mode
           case "book":
             // bookscrape
-            window.api.send('bookscrape');
+            window.api.send('bookscrape', tmpStart);
             break;
 
           // title mode
           case "title":
             // title scrape
-            window.api.send('titlescrape');
+            window.api.send('titlescrape', tmpStart);
             break;
 
           // author mode
           case "author":
             // author scrape
-            window.api.send('authorscrape');
+            window.api.send('authorscrape', tmpStart);
             break;
 
           default:
@@ -207,6 +258,32 @@
       }
     }
 
+    // on radio changed
+    const radioChanged = (value) => {
+      try {
+        // initialize form
+        if (value === 'author') {
+          // japanese
+          if (globalLanguage == 'japanese') {
+            selectJaDom.classList.add("display-none");
+          } else {
+            selectEnDom.classList.add("display-none");
+          }
+        } else {
+          // japanese
+          if (globalLanguage == 'japanese') {
+            selectJaDom.classList.remove("display-none");
+          } else {
+            selectEnDom.classList.remove("display-none");
+          }
+        }
+
+      } catch (e) {
+        // error
+        console.log(e);
+      }
+    }
+
     // exit
     const exitApp = () => {
       try {
@@ -221,8 +298,12 @@
 
     // change language
     const changeLanguage = lang => {
+      // set global
+      globalLanguage = lang;
       // japanese
       if (lang == 'japanese') {
+        selectJaDom.classList.remove("display-none");
+        selectEnDom.classList.add("display-none");
         document.title = APPNAME_STR_JA;
         maintitleDom.innerHTML = APPNAME_STR_JA;
         scrapeDom.innerHTML = SCRAPING_STR_JA;
@@ -242,6 +323,8 @@
         document.documentElement.setAttribute("lang", 'ja');
         // english
       } else {
+        selectJaDom.classList.add("display-none");
+        selectEnDom.classList.remove("display-none");
         document.title = APPNAME_STR_EN;
         maintitleDom.innerHTML = APPNAME_STR_EN;
         scrapeDom.innerHTML = SCRAPING_STR_EN;
