@@ -25,7 +25,7 @@ export namespace myNums {
   export const MAX_PAGE_ROWS: number = 52;
   export const WINDOW_WIDTH: number = 600; // window width
   export const WINDOW_HEIGHT: number = 1000; // window height
-  export const MAX_AUTHORS: number = 2399;
+  export const MAX_AUTHORS: number = 2450;
 }
 
 // columns
