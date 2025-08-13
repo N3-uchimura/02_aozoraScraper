@@ -1,3 +1,12 @@
+<table>
+	<thead>
+    	<tr>
+      		<th style="text-align:center">English</th>
+      		<th style="text-align:center"><a href="README-ja.md">日本語</a></th>
+    	</tr>
+  	</thead>
+</table>
+
 ## name
 
 aozoraScraper
@@ -25,12 +34,11 @@ Windows10 ~
 - GetAuthors: Get all author data (name, birthday, bod, about).
 - GetTitles: Get all book's data (name, format, authorname, translator).
 
-4. Set options.  
+4. Set options.
    - Select target 'kana' (exept for GetAuthors).
      - all: Get all data.
      - others: Get only target 'kana'.
    - Select min and max for scraping. (only for GetAuthors).
-      
 5. Press "Scraping" button.
 6. All finished, csv files will be on "resources/output/csv" directory.
 
