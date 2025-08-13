@@ -27,8 +27,8 @@ Windows10 ~
 
 4. Set options.  
    1. Select target 'kana' (exept for GetAuthors).
-   - 'all': Get all data.
-   - others: Get only target 'kana'.
+     - 'all': Get all data.
+     - others: Get only target 'kana'.
    2. Select min and max for scraping.
       
 5. Press "Scraping" button.
