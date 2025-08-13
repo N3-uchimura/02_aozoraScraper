@@ -506,6 +506,8 @@ ipcMain.on('bookscrape', async (event: any, _: any) => {
     for await (const [key, value] of Object.entries(myLinks.LINK_SELECTION)) {
       try {
         logger.debug(`bookscrape: getting ${key} 行`);
+        // init array
+        finalJsonArray = [];
         // loop number
         const childLength: number = myLinks.NUM_SELECTION[key];
 
@@ -752,6 +754,7 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
           ローマ字表記: '', // roman
           生年: '', // birth
           没年: '', // dod
+          人物について: '', // aboug
         };
         // set each value
         tmpObj.No = author[0];
@@ -760,6 +763,7 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
         tmpObj.ローマ字表記 = author[3];
         tmpObj.生年 = author[4];
         tmpObj.没年 = author[5];
+        tmpObj.人物について = author[6];
         // set to json
         finalJsonArray.push(tmpObj);
       });
@@ -776,6 +780,7 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
           roman: '', // roman
           birth: '', // birth
           bod: '', // dod
+          about: '', // about
         };
         // set each value
         tmpObj.No = author[0];
@@ -784,6 +789,7 @@ ipcMain.on('authorscrape', async (event: any, _: any) => {
         tmpObj.roman = author[3];
         tmpObj.birth = author[4];
         tmpObj.bod = author[5];
+        tmpObj.about = author[5];
         // set to json
         finalJsonArray.push(tmpObj);
       });

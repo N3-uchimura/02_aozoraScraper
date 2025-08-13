@@ -31,7 +31,7 @@ export namespace myNums {
 // columns
 export namespace myColumns {
   export const AUTHOR_COLUMNS: string[] = [
-    'No', '作家名', '作家名読み', 'ローマ字表記', '生年', '没年'
+    'No', '作家名', '作家名読み', 'ローマ字表記', '生年', '没年', '人物について'
   ];
 
   export const BOOK_COLUMNS: string[] = [
@@ -43,7 +43,7 @@ export namespace myColumns {
   ];
 
   export const AUTHOR_COLUMNS_EN: string[] = [
-    'No', 'author', 'authorruby', 'roman', 'birth', 'bod'
+    'No', 'author', 'authorruby', 'roman', 'birth', 'bod', 'about'
   ];
 
   export const TITLE_COLUMNS_EN: string[] = [
@@ -158,4 +158,3 @@ export namespace myLinks {
     A: 1,
   });
 }
-
