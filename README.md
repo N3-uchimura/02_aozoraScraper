@@ -19,7 +19,9 @@ This is scraping tool for [aozora bunko](https://www.aozora.gr.jp/).
 
 Windows10 ~
 
-## Usage
+## Setting
+
+# From souce
 
 1. Download zip or pull repository.
 2. Execute below on cmd.
@@ -27,20 +29,28 @@ Windows10 ~
    npm install
    npm start
    ```
-3. Select mode.
+
+# From exe
+
+1. Download exe file from release.
+2. DoubleClick on exe file and install.
+
+## Usage
+
+1. Select mode.
 
 - GetFiles: Get zip files which contain book's txt data. Download to chrome's default dir.
 - GetBooks: Get all book data (name, nameruby).
 - GetAuthors: Get all author data (name, birthday, bod, about).
 - GetTitles: Get all book's data (name, format, authorname, translator).
 
-4. Set options.
+2. Set options.
    - Select target 'kana' (exept for GetAuthors).
      - all: Get all data.
      - others: Get only target 'kana'.
    - Select min and max for scraping. (only for GetAuthors).
-5. Press "Scraping" button.
-6. All finished, csv files will be on "resources/output" directory.
+3. Press "Scraping" button.
+4. All finished, csv files will be on "resources/output" directory.
 
 ## Features
 
