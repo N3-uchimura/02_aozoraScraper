@@ -29,7 +29,7 @@
     </div>
     <div id="endnum_area" class="number01 display-none">
       <h3 id="endnumHead">End number (2-2410)</h3>
-      <input id="endnum" type="number" min="2" max="2410" value="100">
+      <input id="endnum" type="number" min="2" max="2410" value="2410">
     </div>
     <div id="select_en" class="cp_ipselect02">
       <select id="starten" name="start">
@@ -70,10 +70,6 @@
     <button id="config_button" class="button-g button-6 button-wide" value="config"
       onclick="gotoConfig()">Config</button>
   </div>
-  <div class="progressarea">
-    <div id="successhead">Success:<span id="success"></span>/<span id="successtotal"></span></div>
-    <div id="failhead">Fail:<span id="fail"></span>/<span id="failtotal"></span></div>
-  </div>
   <div class="operation_area">
     <h3 id="statushead">Status</h3>
     <div id="targetpage"></div>
@@ -98,8 +94,6 @@
     const STARTNUM_STR_JA = '開始位置(1-2410)';
     const ENDNUM_STR_JA = '終了位置(2-2410)';
     const CONFIG_STR_JA = '設定';
-    const SUCCESS_STR_JA = '成功:';
-    const FAIL_STR_JA = '失敗:';
     const STATUS_STR_JA = '状態:';
     const EXIT_STR_JA = '終了';
     // english
@@ -112,8 +106,6 @@
     const STARTNUM_STR_EN = 'Start number (1-2410)';
     const ENDNUM_STR_EN = 'End number (2-2410)';
     const CONFIG_STR_EN = 'Config';
-    const SUCCESS_STR_EN = 'success:';
-    const FAIL_STR_EN = 'fail:';
     const STATUS_STR_EN = 'status:';
     const EXIT_STR_EN = 'Exit';
     // doms
@@ -137,12 +129,6 @@
     const configDom = document.getElementById('config');
     const configButtonDom = document.getElementById('config_button');
     const pageDom = document.getElementById('targetpage');
-    const successHeadDom = document.getElementById('successhead');
-    const successDom = document.getElementById('success');
-    const failHeadDom = document.getElementById('failhead');
-    const failDom = document.getElementById('fail');
-    const successtotalDom = document.getElementById('successtotal');
-    const failtotalDom = document.getElementById('failtotal');
     const statusHeadDom = document.getElementById('statushead');
     const statusDom = document.getElementById('status');
     const exitButtonDom = document.getElementById('exit_button');
@@ -155,43 +141,14 @@
 
     // be ready
     window.api.on("ready", arg => {
-      console.log('ready');
       // change language
       changeLanguage(arg);
-    });
-
-    // total
-    window.api.on('total', arg => {
-      try {
-        // success total
-        successtotalDom.innerHTML = arg;
-        // fail total
-        failtotalDom.innerHTML = arg;
-
-      } catch (e) {
-        // error
-        console.log(e);
-      }
-    });
-
-    // update
-    window.api.on('update', arg => {
-      try {
-        // success
-        successDom.innerHTML = arg.success;
-        // fail
-        failDom.innerHTML = arg.fail;
-
-      } catch (e) {
-        // error
-        console.log(e);
-      }
     });
 
     // update status
     window.api.on('statusUpdate', arg => {
       try {
-        // status 
+        // status
         statusDom.innerHTML = `
           scraping: ${arg.status}`;
         // target
@@ -209,11 +166,6 @@
       try {
         // start
         let tmpStart = '';
-        // initialize form
-        successDom.innerHTML = '';
-        failDom.innerHTML = '';
-        successtotalDom.innerHTML = '';
-        failtotalDom.innerHTML = '';
         // get radio
         const value = document.querySelector("input[name='mode']:checked").value;
         // get select
@@ -227,7 +179,7 @@
         switch (value) {
           // file mode
           case "file":
-            // bookscrape
+            // file scrape
             window.api.send('download', tmpStart);
             break;
 
@@ -245,8 +197,12 @@
 
           // author mode
           case "author":
+            const tmpObj = {
+              start: startNumDom.value,
+              end: endNumDom.value
+            }
             // author scrape
-            window.api.send('authorscrape', tmpStart);
+            window.api.send('authorscrape', tmpObj);
             break;
 
           default:
@@ -262,11 +218,6 @@
     // goto config page
     const gotoConfig = () => {
       try {
-        // initialize form
-        successDom.innerHTML = '';
-        failDom.innerHTML = '';
-        successtotalDom.innerHTML = '';
-        failtotalDom.innerHTML = '';
         // scrape
         window.api.send('config');
 
@@ -338,10 +289,6 @@
         scrapeButtonDom.innerHTML = SCRAPING_STR_JA;
         configDom.innerHTML = CONFIG_STR_JA;
         configButtonDom.innerHTML = CONFIG_STR_JA;
-        successHeadDom.innerHTML = SUCCESS_STR_JA;
-        successDom.innerHTML = SUCCESS_STR_JA;
-        failHeadDom.innerHTML = FAIL_STR_JA;
-        failDom.innerHTML = FAIL_STR_JA;
         statusHeadDom.innerHTML = STATUS_STR_JA;
         exitButtonDom.innerHTML = EXIT_STR_JA;
         document.documentElement.setAttribute("lang", 'ja');
@@ -361,10 +308,6 @@
         scrapeButtonDom.innerHTML = SCRAPING_STR_EN;
         configDom.innerHTML = CONFIG_STR_EN;
         configButtonDom.innerHTML = CONFIG_STR_EN;
-        successHeadDom.innerHTML = SUCCESS_STR_EN;
-        successDom.innerHTML = SUCCESS_STR_EN;
-        failHeadDom.innerHTML = FAIL_STR_EN;
-        failDom.innerHTML = FAIL_STR_EN;
         statusHeadDom.innerHTML = STATUS_STR_EN;
         exitButtonDom.innerHTML = EXIT_STR_EN;
         document.documentElement.setAttribute("lang", 'en');

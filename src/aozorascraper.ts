@@ -141,7 +141,7 @@ app.on('ready', async () => {
     // output path
     const outputPath: string = path.join(globalRootPath, myConst.OUTPUT_PATH);
     // makedir
-    await mkdirManager.mkDirAll([outputPath, path.join(outputPath, 'csv')]);
+    await mkdirManager.mkDir(outputPath);
     // not exists
     if (!existsSync(languageTxtPath)) {
       logger.debug('app: making txt ...');
@@ -351,10 +351,6 @@ ipcMain.on('exitapp', async () => {
 ipcMain.on('download', async (event: any, arg: any) => {
   try {
     logger.info('ipc: download mode');
-    // success
-    let successCounter: number = 0;
-    // fail
-    let failCounter: number = 0;
     // num data
     const numArray: number[] = getArrayNum(arg);
     // init scraper
@@ -374,15 +370,6 @@ ipcMain.on('download', async (event: any, arg: any) => {
         // within total 
         if (childLength >= myNums.FIRST_BOOK_ROWS) {
           logger.debug(`download: total is ${childLength}`);
-          // update total
-          event.sender.send('total', childLength * 50);
-          // now URL
-          event.sender.send('statusUpdate', {
-            status: '',
-            target: `${targetJa} 行`
-          });
-          logger.debug('download: doPageScrape mode');
-
           // for loop
           const nums: number[] = makeNumberRange(myNums.FIRST_BOOK_ROWS, childLength + 1);
 
@@ -435,8 +422,6 @@ ipcMain.on('download', async (event: any, arg: any) => {
                         // goback
                         await puppScraper.doGoBack(),
                       ]);
-                      // success
-                      successCounter++;
 
                     } else {
                       // error
@@ -454,13 +439,8 @@ ipcMain.on('download', async (event: any, arg: any) => {
                 } finally {
                   // URL
                   event.sender.send('statusUpdate', {
-                    status: '',
-                    target: `downloading No.${k - 1}`
-                  });
-                  // update total
-                  event.sender.send('update', {
-                    success: successCounter,
-                    fail: failCounter,
+                    status: `${targetJa} 行`,
+                    target: `downloading No.${k}`
                   });
                 }
               }
@@ -478,7 +458,7 @@ ipcMain.on('download', async (event: any, arg: any) => {
       }
     }
     // end message
-    dialogMaker.showmessage('info', 'completed.');
+    showCompleteMessage();
     logger.info('ipc: download completed');
 
   } catch (e: unknown) {
@@ -499,10 +479,6 @@ ipcMain.on('download', async (event: any, arg: any) => {
 ipcMain.on('bookscrape', async (event: any, arg: any) => {
   try {
     logger.info('ipc: bookscrape mode');
-    // success
-    let successCounter: number = 0;
-    // fail
-    let failCounter: number = 0;
     // finaljson
     let finalJsonArray: any[] = [];
     // num data
@@ -526,15 +502,6 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
         // within total 
         if (childLength >= myNums.FIRST_BOOK_ROWS) {
           logger.debug(`bookscrape: total is ${childLength}`);
-          // update total
-          event.sender.send('total', childLength * 50);
-          // now URL
-          event.sender.send('statusUpdate', {
-            status: `${targetJa} 行`,
-            target: ``
-          });
-          logger.debug('bookscrape: doPageScrape mode');
-
           // for loop
           const nums: number[] = makeNumberRange(myNums.FIRST_BOOK_ROWS, childLength + 1);
 
@@ -555,6 +522,10 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
                 try {
                   // selector
                   const finalLinkSelector: string = `${mySelectors.FINALLINK_SELECTOR} > tr:nth-child(${k}) > td:nth-child(2) > a`;
+                  // selector exists
+                  if (!await puppScraper.doCheckSelector(finalLinkSelector)) {
+                    break;
+                  }
                   // wait for 2sec
                   await puppScraper.doWaitFor(1000);
 
@@ -586,8 +557,8 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
                     const booknameruby: string = await puppScraper.doSingleEval(rubyLinkSelector, 'innerHTML');
                     // set each value
                     tmpObj.No = String(k - 1);
-                    tmpObj.作品名 = bookname;
-                    tmpObj.作品名かな = booknameruby;
+                    tmpObj.bookname = bookname;
+                    tmpObj.booknameruby = booknameruby;
                     // set to json
                     finalJsonArray.push(tmpObj);
                     // goback
@@ -600,21 +571,12 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
 
                 } catch (err1: unknown) {
                   logger.error(err1);
-                  // failCounter
-                  failCounter++;
 
                 } finally {
-                  // successcounter
-                  successCounter++;
                   // URL
                   event.sender.send('statusUpdate', {
-                    status: `${targetJa} 行`,
-                    target: `downloading No.${k - 1}`
-                  });
-                  // update total
-                  event.sender.send('update', {
-                    success: successCounter,
-                    fail: failCounter,
+                    status: `${targetJa} 行 ${j}`,
+                    target: `downloading No.${k}`
                   });
                 }
               }
@@ -631,7 +593,7 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
         // filename
         const fileName: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 8);
         // csv filename
-        const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, 'csv', `${fileName}_${targetJa}行.csv`);
+        const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【book】${fileName}_${targetJa}行.csv`);
         // write data
         await csvMaker.makeCsvData(finalJsonArray, bookColumns, filePath);
 
@@ -640,7 +602,7 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
       }
     }
     // end message
-    dialogMaker.showmessage('info', 'completed.');
+    showCompleteMessage();
     logger.info('ipc: bookscrape completed');
 
   } catch (e: unknown) {
@@ -661,28 +623,19 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
 ipcMain.on('authorscrape', async (event: any, arg: any) => {
   try {
     logger.info('ipc: authorscrape mode');
-    // success
-    let successCounter: number = 0;
-    // faile
-    let failCounter: number = 0;
     // author array
     let authorColumns: string[] = [];
     // last array
     let finalArray: string[][] = [];
-    // language
-    const language = cacheMaker.get('language') ?? 'japanese';
-    // filename
-    const fileName: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 8);
+    const startNo: number = Number(arg.start);
+    const endNo: number = Number(arg.end);
     // init scraper
     await puppScraper.init();
     // URL
-    logger.debug(`authorscrape: total is ${myNums.MAX_AUTHORS}`);
-    // update total
-    event.sender.send('total', myNums.MAX_AUTHORS);
-    logger.debug('authorscrape: doPageScrape mode');
+    logger.debug(`authorscrape: total is ${endNo}`);
 
     // for loop
-    const nums: number[] = makeNumberRange(1, myNums.MAX_AUTHORS);
+    const nums: number[] = makeNumberRange(startNo, endNo);
 
     // loop
     for await (const i of nums) {
@@ -696,19 +649,28 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
         await puppScraper.doGo(aozoraUrl);
         logger.debug('authorscrape: doAuthorScrape mode');
         // row loop number
-        const rows: number[] = makeNumberRange(1, 6);
-        // insert no.
-        tmpArray.push(i.toString());
-
+        const rows: number[] = makeNumberRange(1, 7);
+        // selector
+        let tmpLinkSelector: string = `body > table > tbody > tr:nth-child(1) > td:nth-child(2)`;
+        // selector exists
+        if (await puppScraper.doCheckSelector(tmpLinkSelector)) {
+          // insert no.
+          tmpArray.push(i.toString());
+        }
         // loop
         for await (const j of rows) {
           try {
-            logger.silly(`authorscrape: scraping No.${j - 1}`);
+            logger.silly(`authorscrape: scraping No.${j}`);
             // selector
             let finalLinkSelector: string = `body > table > tbody > tr:nth-child(${j}) > td:nth-child(2)`;
+            // selector exists
+            if (!await puppScraper.doCheckSelector(finalLinkSelector)) {
+              logger.silly(`No.${j}: no selector`);
+              break;
+            }
             // when title link
             if (j == 1) {
-              finalLinkSelector += ' > font';
+              finalLinkSelector += ' > font'
             }
             // wait for 2sec
             await puppScraper.doWaitFor(500);
@@ -724,8 +686,8 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
           } finally {
             // URL
             event.sender.send('statusUpdate', {
-              status: `No.${j - 1}`,
-              target: `downloading Page.${i}`
+              status: `No.${j}`,
+              target: `scraping Page.${i}`
             });
           }
         }
@@ -736,86 +698,51 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
 
       } catch (err2: unknown) {
         logger.error(err2);
-        // fail
-        failCounter++;
       } finally {
-        // update total
-        event.sender.send('update', {
-          success: successCounter,
-          fail: failCounter,
-        });
       }
-      // successcounter
-      successCounter++;
       // wait for 1sec
       await puppScraper.doWaitFor(1000);
     }
 
     // finaljson
     let finalJsonArray: any[] = [];
-    // language
-    if (language == 'japanese') {
-      // for training
-      finalArray.forEach((author: any) => {
-        // empty array
-        let tmpObj: { [key: string]: string } = {
-          No: '', // number
-          作家名: '', // authorname
-          作家名読み: '', // ruby
-          ローマ字表記: '', // roman
-          生年: '', // birth
-          没年: '', // dod
-          人物について: '', // aboug
-        };
-        // set each value
-        tmpObj.No = author[0];
-        tmpObj.作家名 = author[1];
-        tmpObj.作家名読み = author[2];
-        tmpObj.ローマ字表記 = author[3];
-        tmpObj.生年 = author[4];
-        tmpObj.没年 = author[5];
-        tmpObj.人物について = author[6];
-        // set to json
-        finalJsonArray.push(tmpObj);
-      });
-      // csv columns
-      authorColumns = myColumns.AUTHOR_COLUMNS;
-    } else {
-      // for training
-      finalArray.forEach((author: any) => {
-        // empty array
-        let tmpObj: { [key: string]: string } = {
-          No: '', // number
-          author: '', // authorname
-          authorruby: '', // ruby
-          roman: '', // roman
-          birth: '', // birth
-          bod: '', // dod
-          about: '', // about
-        };
-        // set each value
-        tmpObj.No = author[0];
-        tmpObj.author = author[1];
-        tmpObj.authorruby = author[2];
-        tmpObj.roman = author[3];
-        tmpObj.birth = author[4];
-        tmpObj.bod = author[5];
-        tmpObj.about = author[6];
-        // set to json
-        finalJsonArray.push(tmpObj);
-      });
-      // csv columns
-      authorColumns = myColumns.AUTHOR_COLUMNS_EN;
-    }
+    // for training
+    finalArray.forEach((author: any) => {
+      // empty array
+      let tmpObj: { [key: string]: string } = {
+        No: '', // number
+        author: '', // authorname
+        authorruby: '', // ruby
+        roman: '', // roman
+        birth: '', // birth
+        bod: '', // dod
+        about: '', // about
+      };
+      // set each value
+      tmpObj.No = author[0];
+      tmpObj.author = author[1];
+      tmpObj.authorruby = author[2];
+      tmpObj.roman = author[3];
+      tmpObj.birth = author[4];
+      tmpObj.bod = author[5];
+      tmpObj.about = author[6];
+      // set to json
+      finalJsonArray.push(tmpObj);
+    });
+    // csv columns
+    authorColumns = myColumns.AUTHOR_COLUMNS;
+
     logger.debug('authorscrape: making csv...');
+    // nowtime
+    const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
     // csv filename
-    const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, 'csv', `${fileName}.csv`);
+    const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【author】${nowTimeStr}-${startNo}_${endNo}.csv`);
     // write data
     await csvMaker.makeCsvData(finalJsonArray, authorColumns, filePath);
     // wait for 1sec
     await puppScraper.doWaitFor(1000);
     // end message
-    dialogMaker.showmessage('info', 'completed.');
+    showCompleteMessage();
     logger.info('ipc: authorscrape completed');
 
   } catch (e: unknown) {
@@ -844,8 +771,6 @@ ipcMain.on('titlescrape', async (event: any, arg: any) => {
     const fileName: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 8);
     // init scraper
     await puppScraper.init();
-    // language
-    const language = cacheMaker.get('language') ?? 'japanese';
     // URL
     for await (const i of numArray) {
       try {
@@ -856,23 +781,12 @@ ipcMain.on('titlescrape', async (event: any, arg: any) => {
         logger.debug(`titlescrape: getting ${targetJa} 行`);
         // last array
         let wholeArray: any = [];
-        // success
-        let successCounter: number = 0;
-        // faile
-        let failCounter: number = 0;
         // loop number
         const childLength: number = myLinks.NUM_SELECTION[targetJa];
 
         // within total 
         if (childLength >= myNums.FIRST_BOOK_ROWS) {
           logger.debug(`titlescrape: total is ${childLength}`);
-          // update total
-          event.sender.send('total', childLength * myNums.MAX_PAGE_ROWS);
-          // now URL
-          event.sender.send('statusUpdate', {
-            status: '',
-            target: `${targetJa} 行`
-          });
 
           // for loop
           const nums: number[] = makeNumberRange(myNums.FIRST_BOOK_ROWS, childLength + 1);
@@ -921,8 +835,6 @@ ipcMain.on('titlescrape', async (event: any, arg: any) => {
                   }
                   // set to finalArray
                   finalArray.push(tmpArray);
-                  // successcounter
-                  successCounter++;
 
                 } catch (err2: unknown) {
                   logger.error(err2);
@@ -930,13 +842,8 @@ ipcMain.on('titlescrape', async (event: any, arg: any) => {
                 } finally {
                   // URL
                   event.sender.send('statusUpdate', {
-                    status: '',
-                    target: `Page.${i - 1} No.${j - 1}`
-                  });
-                  // update total
-                  event.sender.send('update', {
-                    success: successCounter,
-                    fail: failCounter,
+                    status: `${targetJa} 行`,
+                    target: `Page.${i} No.${j}`
                   });
                 }
               }
@@ -954,60 +861,37 @@ ipcMain.on('titlescrape', async (event: any, arg: any) => {
           let finalJsonArray: any[] = [];
           // all races
           wholeArray.forEach((books: any) => {
-            // language
-            if (language == 'japanese') {
-              // for training
-              books.forEach((book: any) => {
-                // empty array
-                let tmpObj: { [key: string]: string } = {
-                  No: '', // number
-                  作品名: '', // title
-                  文字遣い種別: '', // ruby
-                  著者名: '', // authorname
-                  著者基本名: '', // authorbasename
-                  翻訳者名等: '', // editor
-                };
-                // set each value
-                tmpObj.No = book[0];
-                tmpObj.作品名 = book[1];
-                tmpObj.文字遣い種別 = book[2];
-                tmpObj.著者名 = book[3];
-                tmpObj.著者基本名 = book[4];
-                tmpObj.翻訳者名等 = book[5];
-                // set to json
-                finalJsonArray.push(tmpObj);
-              });
-              // csv columns
-              titleColumns = myColumns.TITLE_COLUMNS;
-            } else {
-              // for training
-              books.forEach((book: any) => {
-                // empty array
-                let tmpObj: { [key: string]: string } = {
-                  No: '', // number
-                  title: '', // title
-                  lettering: '', // ruby
-                  author: '', // authorname
-                  authorname: '', // authorbasename
-                  translator: '', // editor
-                };
-                // set each value
-                tmpObj.No = book[0];
-                tmpObj.title = book[1];
-                tmpObj.lettering = book[2];
-                tmpObj.author = book[3];
-                tmpObj.authorname = book[4];
-                tmpObj.translator = book[5];
-                // set to json
-                finalJsonArray.push(tmpObj);
-              });
-              // csv columns
-              titleColumns = myColumns.TITLE_COLUMNS_EN;
-            }
+            // for training
+            books.forEach((book: any) => {
+              // empty array
+              let tmpObj: { [key: string]: string } = {
+                No: '', // number
+                title: '', // title
+                lettering: '', // ruby
+                author: '', // authorname
+                authorname: '', // authorbasename
+                translator: '', // editor
+              };
+              // set each value
+              tmpObj.No = book[0];
+              tmpObj.title = book[1];
+              tmpObj.lettering = book[2];
+              tmpObj.author = book[3];
+              tmpObj.authorname = book[4];
+              tmpObj.translator = book[5];
+              // set to json
+              finalJsonArray.push(tmpObj);
+            });
+            // csv columns
+            titleColumns = myColumns.TITLE_COLUMNS;
+
           });
           logger.debug('titlescrape: making csv...');
           // csv filename
-          const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, 'csv', `${fileName}_${targetJa}行.csv`);
+          // nowtime
+          const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
+          // csv filename
+          const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【title】${nowTimeStr}-${fileName}_${targetJa}行.csv`);
           // write data
           await csvMaker.makeCsvData(finalJsonArray, titleColumns, filePath);
         }
@@ -1016,9 +900,9 @@ ipcMain.on('titlescrape', async (event: any, arg: any) => {
         logger.error(err4);
       }
     }
-    logger.info('ipc: titlescrape completed');
     // end message
-    dialogMaker.showmessage('info', 'completed.');
+    showCompleteMessage();
+    logger.info('ipc: titlescrape completed');
 
   } catch (e: unknown) {
     logger.error(e);
@@ -1057,4 +941,20 @@ const getArrayNum = (arg: string): number[] => {
   }
   // for loop
   return makeNumberRange(numIndex, numIndex + 4);
+}
+
+// comp message
+const showCompleteMessage = (): void => {
+  // message
+  let completeMessage: string = '';
+  // language
+  const language = cacheMaker.get('language') ?? 'japanese';
+  // japanese
+  if (language == 'japanese') {
+    completeMessage = '終了しました。';
+  } else {
+    completeMessage = 'completed!';
+  }
+  // end message
+  dialogMaker.showmessage('info', completeMessage);
 }

@@ -23,30 +23,22 @@ export namespace myNums {
   export const FIRST_BOOK_ROWS: number = 1;
   export const FIRST_PAGE_ROWS: number = 2;
   export const MAX_PAGE_ROWS: number = 52;
-  export const WINDOW_WIDTH: number = 600; // window width
-  export const WINDOW_HEIGHT: number = 1000; // window height
+  export const WINDOW_WIDTH: number = 600;
+  export const WINDOW_HEIGHT: number = 1000;
   export const MAX_AUTHORS: number = 2450;
 }
 
 // columns
 export namespace myColumns {
-  export const AUTHOR_COLUMNS: string[] = [
-    'No', '作家名', '作家名読み', 'ローマ字表記', '生年', '没年', '人物について'
-  ];
-
   export const BOOK_COLUMNS: string[] = [
-    'No', '作品名', '作品名かな'
+    'No', 'bookname', 'booknameruby'
   ];
 
-  export const TITLE_COLUMNS: string[] = [
-    'No', '作品名', '文字遣い種別', '著者名', '著者基本名', '翻訳者名等'
-  ];
-
-  export const AUTHOR_COLUMNS_EN: string[] = [
+  export const AUTHOR_COLUMNS: string[] = [
     'No', 'author', 'authorruby', 'roman', 'birth', 'bod', 'about'
   ];
 
-  export const TITLE_COLUMNS_EN: string[] = [
+  export const TITLE_COLUMNS: string[] = [
     'No', 'title', 'lettering', 'author', 'authorname', 'translator'
   ];
 }

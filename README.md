@@ -40,7 +40,7 @@ Windows10 ~
      - others: Get only target 'kana'.
    - Select min and max for scraping. (only for GetAuthors).
 5. Press "Scraping" button.
-6. All finished, csv files will be on "resources/output/csv" directory.
+6. All finished, csv files will be on "resources/output" directory.
 
 ## Features
 
