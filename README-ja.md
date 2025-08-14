@@ -21,7 +21,7 @@ Windows10 ~
 
 ## Setting
 
-# From souce
+### From souce
 
 1. リリースから ZIP ファイルをダウンロードするか、リポジトリを pull します。
 2. コマンドプロンプトを開き、解凍したフォルダか git フォルダ内に移動します。
@@ -34,7 +34,7 @@ Windows10 ~
    npm start
    ```
 
-# From exe
+### From exe
 
 1. リリースから EXE ファイルをダウンロードします。
 2. ダウンロードした EXE ファイルを実行し、インストールします。
