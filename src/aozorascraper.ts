@@ -10,7 +10,6 @@
 // namespace
 import { myConst, myLinks, myNums, myColumns, mySelectors } from './consts/globalvariables';
 
-
 /// Modules
 import * as path from 'node:path'; // path
 import { existsSync } from 'node:fs'; // file system
@@ -127,7 +126,7 @@ const createWindow = (): void => {
 app.enableSandbox();
 
 // main app
-app.on('ready', async () => {
+app.on('ready', async (): Promise<void> => {
   try {
     logger.info('app: electron is ready');
     // create window
@@ -149,7 +148,7 @@ app.on('ready', async () => {
       await writeFile(languageTxtPath, 'japanese');
     }
     // get language
-    const language = await readFile(languageTxtPath, 'utf8');
+    const language: string = await readFile(languageTxtPath, 'utf8');
     logger.debug(`language is ${language}`);
     // japanese
     if (language == 'japanese') {
@@ -202,7 +201,7 @@ app.on('ready', async () => {
 });
 
 // activate
-app.on('activate', () => {
+app.on('activate', (): void => {
   // no window
   if (BrowserWindow.getAllWindows().length === 0) {
     // reload
@@ -211,13 +210,13 @@ app.on('activate', () => {
 });
 
 // close
-app.on('before-quit', () => {
+app.on('before-quit', (): void => {
   // turn on close flg
   isQuiting = true;
 });
 
 // end
-app.on('window-all-closed', () => {
+app.on('window-all-closed', (): void => {
   logger.info('app: close app');
   // exit
   app.quit();
@@ -227,13 +226,14 @@ app.on('window-all-closed', () => {
  IPC
 */
 // ready
-ipcMain.on("beforeready", async (event: any, __) => {
+ipcMain.on("beforeready", async (event: any, _: any): Promise<void> => {
   try {
     logger.info("app: beforeready app");
     // language
-    const language = cacheMaker.get('language') ?? 'japanese';
+    const language: string = cacheMaker.get('language') ?? 'japanese';
     // be ready
     event.sender.send("ready", language);
+
   } catch (e: unknown) {
     logger.error(e);
     // error
@@ -245,15 +245,16 @@ ipcMain.on("beforeready", async (event: any, __) => {
 });
 
 // config
-ipcMain.on('config', async (event: any, _) => {
+ipcMain.on('config', async (event: any, _: any): Promise<void> => {
   try {
     logger.info('app: config app');
     // language
-    const language = cacheMaker.get('language') ?? 'japanese';
+    const language: string = cacheMaker.get('language') ?? 'japanese';
     // goto config page
     await mainWindow.loadFile(path.join(globalRootPath, 'www', 'config.html'));
     // language
     event.sender.send('confready', language);
+
   } catch (e: unknown) {
     logger.error(e);
     // error
@@ -265,7 +266,7 @@ ipcMain.on('config', async (event: any, _) => {
 });
 
 // save
-ipcMain.on('save', async (event: any, arg: any) => {
+ipcMain.on('save', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('app: save config');
     // language
@@ -280,6 +281,7 @@ ipcMain.on('save', async (event: any, arg: any) => {
     await mainWindow.loadFile(path.join(globalRootPath, 'www', 'index.html'));
     // language
     event.sender.send('ready', language);
+
   } catch (e: unknown) {
     logger.error(e);
     // error
@@ -291,15 +293,16 @@ ipcMain.on('save', async (event: any, arg: any) => {
 });
 
 // top
-ipcMain.on('top', async (event: any, _) => {
+ipcMain.on('top', async (event: any, _): Promise<void> => {
   try {
     logger.info('app: top');
     // goto config page
     await mainWindow.loadFile(path.join(globalRootPath, 'www', 'index.html'));
     // language
-    const language = cacheMaker.get('language') ?? '';
+    const language: string = cacheMaker.get('language') ?? '';
     // language
     event.sender.send('topready', language);
+
   } catch (e: unknown) {
     logger.error(e);
     // error
@@ -311,7 +314,7 @@ ipcMain.on('top', async (event: any, _) => {
 });
 
 // exit
-ipcMain.on('exitapp', async () => {
+ipcMain.on('exitapp', async (): Promise<void> => {
   try {
     logger.info('ipc: exit mode');
     // title
@@ -319,7 +322,7 @@ ipcMain.on('exitapp', async () => {
     // message
     let questionMessage: string = '';
     // language
-    const language = cacheMaker.get('language') ?? 'japanese';
+    const language: string = cacheMaker.get('language') ?? 'japanese';
     // japanese
     if (language == 'japanese') {
       questionTitle = '終了';
@@ -348,7 +351,7 @@ ipcMain.on('exitapp', async () => {
 });
 
 // download
-ipcMain.on('download', async (event: any, arg: any) => {
+ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('ipc: download mode');
     // num data
@@ -476,7 +479,7 @@ ipcMain.on('download', async (event: any, arg: any) => {
 });
 
 // book scrape
-ipcMain.on('bookscrape', async (event: any, arg: any) => {
+ipcMain.on('bookscrape', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('ipc: bookscrape mode');
     // finaljson
@@ -620,13 +623,13 @@ ipcMain.on('bookscrape', async (event: any, arg: any) => {
 });
 
 // authorscrape
-ipcMain.on('authorscrape', async (event: any, arg: any) => {
+ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('ipc: authorscrape mode');
-    // author array
+    // array
     let authorColumns: string[] = [];
-    // last array
     let finalArray: string[][] = [];
+    // no
     const startNo: number = Number(arg.start);
     const endNo: number = Number(arg.end);
     // init scraper
@@ -686,8 +689,8 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
           } finally {
             // URL
             event.sender.send('statusUpdate', {
-              status: `No.${j}`,
-              target: `scraping Page.${i}`
+              status: `No.${j}`, // status
+              target: `scraping Page.${i}` // page
             });
           }
         }
@@ -760,7 +763,7 @@ ipcMain.on('authorscrape', async (event: any, arg: any) => {
 });
 
 // titlescrape
-ipcMain.on('titlescrape', async (event: any, arg: any) => {
+ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('ipc: titlescrape mode');
     // csv columns
@@ -842,8 +845,8 @@ ipcMain.on('titlescrape', async (event: any, arg: any) => {
                 } finally {
                   // URL
                   event.sender.send('statusUpdate', {
-                    status: `${targetJa} 行`,
-                    target: `Page.${i} No.${j}`
+                    status: `${targetJa} 行`, // status
+                    target: `Page.${i} No.${j}` // page
                   });
                 }
               }
@@ -948,7 +951,7 @@ const showCompleteMessage = (): void => {
   // message
   let completeMessage: string = '';
   // language
-  const language = cacheMaker.get('language') ?? 'japanese';
+  const language: string = cacheMaker.get('language') ?? 'japanese';
   // japanese
   if (language == 'japanese') {
     completeMessage = '終了しました。';
