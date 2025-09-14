@@ -39,10 +39,11 @@ Windows10 ~
 
 1. Select mode.
 
-- GetFiles: Get zip files which contain book's txt data. Download to chrome's default dir.
+- GetFiles: Get zip files which contain book's txt data. Download to "resources/output" directory.
 - GetBooks: Get all book data (name, nameruby).
 - GetAuthors: Get all author data (name, birthday, bod, about).
 - GetTitles: Get all book's data (name, format, authorname, translator).
+- GetCategories: Get all book's category (ex. NDC K913).
 
 2. Set options.
    - Select target 'kana' (exept for GetAuthors).

@@ -53,7 +53,7 @@ export class Scrape {
       try {
         Scrape.logger.silly('scrape: initialize mode.');
         const puppOptions: puppOption = {
-          headless: true, // no display mode
+          headless: false, // no display mode
           executablePath: getChromePath(), // chrome.exe path
           ignoreDefaultArgs: [DISABLE_EXTENSIONS], // ignore extensions
           args: [], // args
@@ -490,14 +490,14 @@ export class Scrape {
   }
 
   // allow multiple download
-  allowMultiDl(): Promise<void> {
+  allowMultiDl(outpath: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
         Scrape.logger.debug('scrape: getUrl mode.');
         // client
         const client: any = await Scrape.page.target().createCDPSession();
         // allow multiple download
-        await client.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: path.resolve(__dirname, '../..', 'output', 'zip') });
+        await client.send('Browser.setDownloadBehavior', { behavior: 'allow', downloadPath: outpath });
         resolve();
 
       } catch (e: unknown) {

@@ -358,7 +358,8 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
     const numArray: number[] = getArrayNum(arg);
     // init scraper
     await puppScraper.init();
-
+    // allow multiple dl
+    await puppScraper.allowMultiDl(path.join(globalRootPath, myConst.OUTPUT_PATH));
 
     // URL
     for await (const i of numArray) {
@@ -416,14 +417,10 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
                       await Promise.all([
                         // wait for 1sec
                         await puppScraper.doWaitFor(1000),
-                        // wait for datalist
-                        await puppScraper.doWaitSelector(mySelectors.ZIPLINK_SELECTOR, 3000),
-                        // allow multiple dl
-                        await puppScraper.allowMultiDl(),
                         // download zip
                         await puppScraper.doDownload(mySelectors.ZIPLINK_SELECTOR),
-                        // wait 1sec
-                        await puppScraper.doWaitFor(4000),
+                        // wait for 1sec
+                        await puppScraper.doWaitFor(1000),
                         // goback
                         await puppScraper.doGoBack(),
                       ]);
