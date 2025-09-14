@@ -1,7 +1,7 @@
 {
   "name": "aozora-scraper",
   "productName": "aozorascraper",
-  "version": "1.2.5-alpha.2",
+  "version": "1.2.5-alpha.3",
   "description": "Electron application aozorascraper",
   "main": "build/aozorascraper.js",
   "scripts": {
@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
-    "electron": "^29.1.1",
+    "electron": "^38.1.0",
     "electron-builder": "^26.0.12"
   },
   "build": {

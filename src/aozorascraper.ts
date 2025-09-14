@@ -16,7 +16,7 @@ import { existsSync } from 'node:fs'; // file system
 import { readFile, writeFile } from 'node:fs/promises'; // filesystem
 import { BrowserWindow, app, ipcMain, Tray, Menu, nativeImage } from 'electron'; // electron
 import NodeCache from 'node-cache'; // for cache
-import { Scrape } from './class/ElScrapeCore0810'; // scraper
+import { Scrape } from './class/ElScrapeCore0914'; // scraper
 import ELLogger from './class/ElLogger'; // logger
 import Dialog from './class/ElDialog0721'; // dialog
 import CSV from './class/ElCsv0414'; // csvmaker
@@ -91,7 +91,7 @@ const createWindow = (): void => {
     });
 
     // stay at tray
-    mainWindow.on('minimize', (event: any): void => {
+    mainWindow.on('will-resize', (event: any): void => {
       // avoid Wclick
       event.preventDefault();
       // hide window
@@ -359,6 +359,7 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
     // init scraper
     await puppScraper.init();
 
+
     // URL
     for await (const i of numArray) {
       try {
@@ -392,7 +393,7 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
               for await (const k of links) {
                 try {
                   // selector
-                  const finalLinkSelector: string = `${mySelectors.FINALLINK_SELECTOR} > tr:nth-child(${k}) > td:nth-child(2) > a`;
+                  const finalLinkSelector: string = mySelectors.finallink(k);
                   // wait for 2sec
                   await puppScraper.doWaitFor(2000);
 
@@ -405,6 +406,7 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
                       await puppScraper.doWaitFor(1000),
                       // url
                       await puppScraper.doClick(finalLinkSelector),
+
                     ]);
                     // get href
                     const zipHref: string = await puppScraper.getHref(mySelectors.ZIPLINK_SELECTOR);
@@ -416,12 +418,12 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
                         await puppScraper.doWaitFor(1000),
                         // wait for datalist
                         await puppScraper.doWaitSelector(mySelectors.ZIPLINK_SELECTOR, 3000),
-                        // download zip
-                        await puppScraper.doClick(mySelectors.ZIPLINK_SELECTOR),
                         // allow multiple dl
                         await puppScraper.allowMultiDl(),
-                        // wait for 3sec
-                        await puppScraper.doWaitFor(3000),
+                        // download zip
+                        await puppScraper.doDownload(mySelectors.ZIPLINK_SELECTOR),
+                        // wait 1sec
+                        await puppScraper.doWaitFor(4000),
                         // goback
                         await puppScraper.doGoBack(),
                       ]);
@@ -446,6 +448,7 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
                     target: `downloading No.${k}`
                   });
                 }
+
               }
               // wait for 1sec
               await puppScraper.doWaitFor(1000);
@@ -524,7 +527,7 @@ ipcMain.on('bookscrape', async (event: any, arg: any): Promise<void> => {
               for await (const k of links) {
                 try {
                   // selector
-                  const finalLinkSelector: string = `${mySelectors.FINALLINK_SELECTOR} > tr:nth-child(${k}) > td:nth-child(2) > a`;
+                  const finalLinkSelector: string = mySelectors.finallink(k);
                   // selector exists
                   if (!await puppScraper.doCheckSelector(finalLinkSelector)) {
                     break;
@@ -550,14 +553,10 @@ ipcMain.on('bookscrape', async (event: any, arg: any): Promise<void> => {
                       作品名: '', // bookname
                       作品名かな: '', // bookname ruby
                     };
-                    // bookname selector
-                    const bookLinkSelector: string = `body > table:nth-child(4) > tbody > tr:nth-child(1) > td:nth-child(2)> font`;
-                    // bookname ruby selector
-                    const rubyLinkSelector: string = `body > table:nth-child(4) > tbody > tr:nth-child(2) > td:nth-child(2)`;
                     // bookname
-                    const bookname: string = await puppScraper.doSingleEval(bookLinkSelector, 'innerHTML');
+                    const bookname: string = await puppScraper.doSingleEval(mySelectors.BOOKLINK_SELECTOR, 'innerHTML');
                     // bookname ruby
-                    const booknameruby: string = await puppScraper.doSingleEval(rubyLinkSelector, 'innerHTML');
+                    const booknameruby: string = await puppScraper.doSingleEval(mySelectors.BOOKRUBYLINK_SELECTOR, 'innerHTML');
                     // set each value
                     tmpObj.No = String(k - 1);
                     tmpObj.bookname = bookname;
@@ -653,10 +652,8 @@ ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
         logger.debug('authorscrape: doAuthorScrape mode');
         // row loop number
         const rows: number[] = makeNumberRange(1, 7);
-        // selector
-        let tmpLinkSelector: string = `body > table > tbody > tr:nth-child(1) > td:nth-child(2)`;
         // selector exists
-        if (await puppScraper.doCheckSelector(tmpLinkSelector)) {
+        if (await puppScraper.doCheckSelector(mySelectors.TMPLINK_SELECTOR)) {
           // insert no.
           tmpArray.push(i.toString());
         }
@@ -665,7 +662,7 @@ ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
           try {
             logger.silly(`authorscrape: scraping No.${j}`);
             // selector
-            let finalLinkSelector: string = `body > table > tbody > tr:nth-child(${j}) > td:nth-child(2)`;
+            let finalLinkSelector: string = mySelectors.finallink(j);
             // selector exists
             if (!await puppScraper.doCheckSelector(finalLinkSelector)) {
               logger.silly(`No.${j}: no selector`);
@@ -766,33 +763,30 @@ ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
 ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('ipc: titlescrape mode');
-    // csv columns
-    let titleColumns: string[] = [];
     // num data
     const numArray: number[] = getArrayNum(arg);
-    // filename
-    const fileName: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 8);
     // init scraper
     await puppScraper.init();
+
     // URL
     for await (const i of numArray) {
       try {
+        // last array
+        let wholeArray: any = [];
         // target kana
         const targetJa: string = Object.keys(myLinks.LINK_SELECTION)[i];
         // target english kana
         const targetEn: any = Object.values(myLinks.LINK_SELECTION)[i];
         logger.debug(`titlescrape: getting ${targetJa} 行`);
-        // last array
-        let wholeArray: any = [];
         // loop number
         const childLength: number = myLinks.NUM_SELECTION[targetJa];
 
         // within total 
         if (childLength >= myNums.FIRST_BOOK_ROWS) {
           logger.debug(`titlescrape: total is ${childLength}`);
-
           // for loop
           const nums: number[] = makeNumberRange(myNums.FIRST_BOOK_ROWS, childLength + 1);
+
           // loop
           for await (const i of nums) {
             try {
@@ -817,7 +811,7 @@ ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
                   for await (const k of columns) {
                     try {
                       // selector
-                      let finalLinkSelector: string = `body > center > table.list > tbody > tr:nth-child(${j}) > td:nth-child(${k})`;
+                      let finalLinkSelector: string = mySelectors.titlelink(j, k);
                       // when title link
                       if (k == 2) {
                         finalLinkSelector += ' > a';
@@ -885,18 +879,17 @@ ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
               // set to json
               finalJsonArray.push(tmpObj);
             });
-            // csv columns
-            titleColumns = myColumns.TITLE_COLUMNS;
 
           });
           logger.debug('titlescrape: making csv...');
-          // csv filename
+          // filename
+          const fileName: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 8);
           // nowtime
           const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
           // csv filename
           const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【title】${nowTimeStr}-${fileName}_${targetJa}行.csv`);
           // write data
-          await csvMaker.makeCsvData(finalJsonArray, titleColumns, filePath);
+          await csvMaker.makeCsvData(finalJsonArray, myColumns.TITLE_COLUMNS, filePath);
         }
 
       } catch (err4: unknown) {
@@ -906,6 +899,134 @@ ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
     // end message
     showCompleteMessage();
     logger.info('ipc: titlescrape completed');
+
+  } catch (e: unknown) {
+    logger.error(e);
+    // error
+    if (e instanceof Error) {
+      // error message
+      dialogMaker.showmessage('error', e.message);
+    }
+
+  } finally {
+    // close scraper
+    await puppScraper.doClose();
+  }
+});
+
+// categoryscrape
+ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
+  try {
+    logger.info('ipc: categoryscrape mode');
+    // tmp array
+    let finalArray: any[] = [];
+    // num data
+    const numArray: number[] = getArrayNum(arg);
+    // init scraper
+    await puppScraper.init();
+
+    // URL
+    for await (const i of numArray) {
+      try {
+        // target kana
+        const targetJa: string = Object.keys(myLinks.LINK_SELECTION)[i];
+        // target english kana
+        const targetEn: any = Object.values(myLinks.LINK_SELECTION)[i];
+        logger.debug(`category: getting ${targetJa} 行`);
+        // loop number
+        const childLength: number = myLinks.NUM_SELECTION[targetJa];
+
+        // within total 
+        if (childLength >= myNums.FIRST_BOOK_ROWS) {
+          logger.debug(`category: total is ${childLength}`);
+          // for loop
+          const nums: number[] = makeNumberRange(myNums.FIRST_BOOK_ROWS, childLength + 1);
+
+          // loop
+          for await (const j of nums) {
+            try {
+              // URL
+              const aozoraUrl: string = `${myConst.DEF_AOZORA_BOOK_URL}_${targetEn}${j}.html`;
+              logger.debug(`category: scraping ${aozoraUrl}`);
+              // move to top
+              await puppScraper.doGo(aozoraUrl);
+              logger.debug('category: doUrlScrape mode');
+              // loop number
+              const links: number[] = makeNumberRange(myNums.FIRST_PAGE_ROWS, myNums.MAX_PAGE_ROWS);
+
+              // loop
+              for await (const k of links) {
+                try {
+                  // empty array
+                  let tmpObj: { [key: string]: string } = {
+                    No: '', // number
+                    category: '', // category
+                  };
+                  // book no
+                  const targetno: string = await puppScraper.doSingleEval(mySelectors.nolink(k), 'innerHTML');
+                  tmpObj.No = targetno;
+                  // selector
+                  const finalLinkSelector: string = mySelectors.finallink(k);
+                  // wait for 2sec
+                  await puppScraper.doWaitFor(2000);
+
+                  // selector exists
+                  if (await puppScraper.doCheckSelector(finalLinkSelector)) {
+                    logger.debug(`category: getting No.${k - 1}`);
+                    // wait and click
+                    await Promise.all([
+                      // wait 1sec
+                      await puppScraper.doWaitFor(1000),
+                      // url
+                      await puppScraper.doClick(finalLinkSelector),
+                    ]);
+                    // wait and click
+                    const targetstring: string = await puppScraper.doSingleEval(mySelectors.CATEGORYLINK_SELECTOR, 'innerHTML');
+                    tmpObj.category = targetstring;
+                    // set to tmparray
+                    finalArray.push(tmpObj);
+                    console.log(tmpObj);
+                    // go back
+                    await puppScraper.doGoBack();
+
+                  } else {
+                    // error
+                    throw new Error('err4: no download link');
+                  }
+
+                } catch (err1: unknown) {
+                  logger.error(err1);
+
+                } finally {
+                  // URL
+                  event.sender.send('statusUpdate', {
+                    status: `${targetJa} 行`,
+                    target: `downloading No.${k}`
+                  });
+                }
+              }
+              // wait for 1sec
+              await puppScraper.doWaitFor(1000);
+
+            } catch (err2: unknown) {
+              logger.error(err2);
+            }
+          }
+        }
+
+      } catch (err3: unknown) {
+        logger.error(err3);
+      }
+    }
+    // nowtime
+    const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
+    // csv filename
+    const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【category】${nowTimeStr}-${arg}.csv`);
+    // write data
+    await csvMaker.makeCsvData(finalArray, myColumns.CATEGORY_COLUMNS, filePath);
+    // end message
+    showCompleteMessage();
+    logger.info('ipc: download completed');
 
   } catch (e: unknown) {
     logger.error(e);

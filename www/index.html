@@ -14,14 +14,16 @@
   <div class="operation_area">
     <h3 id="scraping">Scraping</h3>
     <div>
-      <input type="radio" name="mode" value="file" onchange="radioChanged(this.value)" checked><label id="getfile"
-        for="getfile">GetFile</label>
-      <input type="radio" name="mode" value="book" onchange="radioChanged(this.value)"><label id="getbook"
-        for="getbook">GetBook</label>
-      <input type="radio" name="mode" value="author" onchange="radioChanged(this.value)"><label id="getauthor"
-        for="getauthor">GetAuthor</label>
-      <input type="radio" name="mode" value="title" onchange="radioChanged(this.value)"><label id="gettitle"
-        for="gettitle">GetTitle</label>
+      <input id="file" type="radio" name="mode" value="file" onchange="radioChanged(this.value)" checked><label
+        id="filelabel" for="file">GetFile</label>
+      <input id="book" type="radio" name="mode" value="book" onchange="radioChanged(this.value)"><label id="booklabel"
+        for="book">GetBook</label>
+      <input id="author" type="radio" name="mode" value="author" onchange="radioChanged(this.value)"><label
+        id="authorlabel" for="author">GetAuthor</label>
+      <input id="title" type="radio" name="mode" value="title" onchange="radioChanged(this.value)"><label
+        id="titlelabel" for="title">GetTitle</label>
+      <input id="category" type="radio" name="mode" value="category" onchange="radioChanged(this.value)"><label
+        id="categorylabel" for="category">GetCategory</label>
     </div>
     <div id="startnum_area" class="number01 display-none">
       <h3 id="startnumHead">Start number (1-2410)</h3>
@@ -91,6 +93,7 @@
     const GETBOOKS_STR_JA = '作品取得';
     const GETAUTHORS_STR_JA = '著者取得';
     const GETTITLES_STR_JA = 'タイトル取得';
+    const GETCATEGORIES_STR_JA = 'カテゴリ取得';
     const STARTNUM_STR_JA = '開始位置(1-2410)';
     const ENDNUM_STR_JA = '終了位置(2-2410)';
     const CONFIG_STR_JA = '設定';
@@ -103,6 +106,7 @@
     const GETBOOKS_STR_EN = 'GetBooks';
     const GETAUTHORS_STR_EN = 'GetAuthors';
     const GETTITLES_STR_EN = 'GetTitles';
+    const GETCATEGORIES_STR_EN = 'GetCategories';
     const STARTNUM_STR_EN = 'Start number (1-2410)';
     const ENDNUM_STR_EN = 'End number (2-2410)';
     const CONFIG_STR_EN = 'Config';
@@ -121,10 +125,11 @@
     const startJaDom = document.getElementById("startja");
     const startEnDom = document.getElementById("starten");
     const scrapeDom = document.getElementById('scraping');
-    const getfileDom = document.getElementById('getfile');
-    const getbookDom = document.getElementById('getbook');
-    const getauthorDom = document.getElementById('getauthor');
-    const gettitleDom = document.getElementById('gettitle');
+    const getfileDom = document.getElementById('filelabel');
+    const getbookDom = document.getElementById('booklabel');
+    const getauthorDom = document.getElementById('authorlabel');
+    const gettitleDom = document.getElementById('titlelabel');
+    const getcategoryDom = document.getElementById('categorylabel');
     const scrapeButtonDom = document.getElementById('scraping_button');
     const configDom = document.getElementById('config');
     const configButtonDom = document.getElementById('config_button');
@@ -203,6 +208,12 @@
             }
             // author scrape
             window.api.send('authorscrape', tmpObj);
+            break;
+
+          // category mode
+          case "category":
+            // category scrape
+            window.api.send('categoryscrape', tmpStart);
             break;
 
           default:
@@ -284,6 +295,7 @@
         getbookDom.innerHTML = GETBOOKS_STR_JA;
         getauthorDom.innerHTML = GETAUTHORS_STR_JA;
         gettitleDom.innerHTML = GETTITLES_STR_JA;
+        getcategoryDom.innerHTML = GETCATEGORIES_STR_JA;
         startHeadNumDom.innerHTML = STARTNUM_STR_JA;
         endHeadNumDom.innerHTML = ENDNUM_STR_JA;
         scrapeButtonDom.innerHTML = SCRAPING_STR_JA;
@@ -303,6 +315,7 @@
         getbookDom.innerHTML = GETBOOKS_STR_EN;
         getauthorDom.innerHTML = GETAUTHORS_STR_EN;
         gettitleDom.innerHTML = GETTITLES_STR_EN;
+        getcategoryDom.innerHTML = GETCATEGORIES_STR_EN;
         startHeadNumDom.innerHTML = STARTNUM_STR_EN;
         endHeadNumDom.innerHTML = ENDNUM_STR_EN;
         scrapeButtonDom.innerHTML = SCRAPING_STR_EN;

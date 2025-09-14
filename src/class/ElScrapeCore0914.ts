@@ -3,7 +3,7 @@
  *
  * class：ElScrape
  * function：scraping site with native chrome
- * updated: 2025/08/10
+ * updated: 2025/09/14
  **/
 
 'use strict';
@@ -205,6 +205,24 @@ export class Scrape {
           // wait for time
           Scrape.page.waitForNavigation({ waitUntil: 'load' }),
         ]);
+        // resolved
+        resolve();
+
+      } catch (e: unknown) {
+        Scrape.logger.error(e);
+        // reject
+        reject();
+      }
+    });
+  }
+
+  // download
+  doDownload(elem: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        Scrape.logger.silly('scrape: doClick mode.');
+        // click target element
+        Scrape.page.$$eval(elem, (elements: any) => elements[0].click());
         // resolved
         resolve();
 
