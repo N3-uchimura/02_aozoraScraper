@@ -10,7 +10,7 @@ export namespace myConst {
   export const DEVMODE: boolean = true;
   export const COMPANY_NAME: string = "nthree";
   export const APP_NAME: string = "aozorascraper";
-  export const LOG_LEVEL: string = "info";
+  export const LOG_LEVEL: string = "debug";
   export const DEFAULT_ENCODING: string = "utf8";
   export const CSV_ENCODING: string = "SJIS";
   export const OUTPUT_PATH: string = "output";
@@ -54,8 +54,12 @@ export namespace mySelectors {
   export const BOOKRUBYLINK_SELECTOR: string = `body > table:nth-child(4) > tbody > tr:nth-child(2) > td:nth-child(2)`;
   export const TMPLINK_SELECTOR: string = `body > table > tbody > tr:nth-child(1) > td:nth-child(2)`;
   export const CATEGORYLINK_SELECTOR: string = 'body > table:nth-child(8) > tbody > tr:nth-child(1) > td:nth-child(2)';
+  export const CATEGORYSUBLINK_SELECTOR: string = 'body > table:nth-child(9) > tbody > tr:nth-child(1) > td:nth-child(2)';
   export const titlelink = (num1: number, num2: number): string => {
     return `body > center > table.list > tbody > tr:nth-child(${num1}) > td:nth-child(${num2})`;;
+  }
+  export const authorlink = (num: number): string => {
+    return `body > table > tbody > tr:nth-child(${num}) > td:nth-child(2)`;
   }
   export const finallink = (num: number): string => {
     return `body > center > table > tbody > tr:nth-child(${num}) > td:nth-child(2) > a`;

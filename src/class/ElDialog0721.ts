@@ -25,7 +25,6 @@ class Dialog {
   // show yes/no
   showQuetion(title: string, message: string, detail: string): number {
     try {
-      Dialog.logger.debug('dialog: showQuetion started.');
       // quetion message option
       const options: Electron.MessageBoxSyncOptions = {
         type: 'question',

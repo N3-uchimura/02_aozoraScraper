@@ -28,12 +28,10 @@ class Mkdir {
   mkDir = async (dir: string): Promise<void> => {
     return new Promise(async (resolve, _) => {
       try {
-        Mkdir.logger.debug('mkdir: mkdir started.');
         // not exists
         if (!existsSync(dir)) {
           // make dir
           await mkdir(dir);
-
           Mkdir.logger.debug('mkdir: mkdir completed.');
         } else {
           Mkdir.logger.debug('already exists.');
@@ -51,7 +49,6 @@ class Mkdir {
   mkDirAll = async (dirs: string[]): Promise<void> => {
     return new Promise(async (resolve1, _) => {
       try {
-        Mkdir.logger.debug('mkdir: all mkdir started.');
         // make all dir
         Promise.all(
           dirs.map(async (dir: string): Promise<void> => {
@@ -73,7 +70,7 @@ class Mkdir {
             });
           })
         ).then(() => resolve1());
-        Mkdir.logger.debug('mkdir: mkDirAll started.');
+        Mkdir.logger.debug('mkdir: mkDirAll completed.');
 
         // make dir
       } catch (e: unknown) {

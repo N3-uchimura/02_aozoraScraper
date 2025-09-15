@@ -315,7 +315,6 @@ export class Scrape {
   doSingleEval(selector: string, property: string): Promise<string> {
     return new Promise(async (resolve, _) => {
       try {
-        //Scrape.logger.silly('scrape: doSingleEval mode.');
         // target item
         const exists: boolean = await Scrape.page.$eval(selector, () => true).catch(() => false);
 
@@ -360,7 +359,6 @@ export class Scrape {
   doMultiEval(selector: string, property: string): Promise<string[]> {
     return new Promise(async (resolve, reject) => {
       try {
-        //Scrape.logger.silly('scrape: doMultiEval mode.');
         // data set
         let datas: string[] = [];
         // target list
@@ -437,7 +435,6 @@ export class Scrape {
   doCheckSelector(elem: string): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       try {
-        //Scrape.logger.silly('scrape: doCheckSelector mode.');
         // target item
         const exists: boolean = await Scrape.page.$eval(elem, () => true).catch(() => false);
         // return true/false
@@ -493,7 +490,7 @@ export class Scrape {
   allowMultiDl(outpath: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.debug('scrape: getUrl mode.');
+        Scrape.logger.silly('scrape: allowMultiDl mode.');
         // client
         const client: any = await Scrape.page.target().createCDPSession();
         // allow multiple download

@@ -35,14 +35,14 @@ class CSV {
     CSV.defaultencoding = encoding;
     // logger setting
     CSV.logger = logger;
-    CSV.logger.info('csv: initialize mode');
+    CSV.logger.debug('csv: initialize mode');
   }
 
   // getCsvData
   getCsvData = async (filenames: string): Promise<any> => {
     return new Promise(async (resolve, reject) => {
       try {
-        CSV.logger.info('csv: getCsvData mode');
+        CSV.logger.debug('csv: getCsvData mode');
         // filename exists
         if (filenames.length) {
           // read file
@@ -55,8 +55,7 @@ class CSV {
             from_line: 2, // ignore first line
             skip_empty_lines: true // ignore empty cell
           });
-          console.log(tmpRecords);
-          CSV.logger.info('csv: getCsvData finished');
+          CSV.logger.debug('csv: getCsvData finished');
           // resolve
           resolve({
             record: tmpRecords, // dataa
@@ -82,7 +81,7 @@ class CSV {
   ): Promise<void> => {
     return new Promise(async (resolve, reject) => {
       try {
-        CSV.logger.info('csv: makeCsvData mode');
+        CSV.logger.debug('csv: makeCsvData mode');
         // csvdata
         const csvData: any = stringify(arr, { header: true, columns: columns });
         // write to csv file
@@ -101,7 +100,7 @@ class CSV {
   showCSVDialog = async (mainWindow: any): Promise<string> => {
     return new Promise(async (resolve, reject) => {
       try {
-        CSV.logger.info('csv: showCSVDialog mode');
+        CSV.logger.debug('csv: showCSVDialog mode');
         // options
         const dialogOptions: csvDialog = {
           properties: ['openFile'], // file open

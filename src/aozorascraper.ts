@@ -560,6 +560,7 @@ ipcMain.on('bookscrape', async (event: any, arg: any): Promise<void> => {
                     tmpObj.booknameruby = booknameruby;
                     // set to json
                     finalJsonArray.push(tmpObj);
+                    logger.debug(`bookscrape: ${bookname}`);
                     // goback
                     await puppScraper.doGoBack();
 
@@ -589,10 +590,10 @@ ipcMain.on('bookscrape', async (event: any, arg: any): Promise<void> => {
         }
         // csv columns
         const bookColumns: string[] = myColumns.BOOK_COLUMNS;
-        // filename
-        const fileName: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 8);
+        // nowtime
+        const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
         // csv filename
-        const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【book】${fileName}_${targetJa}行.csv`);
+        const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【book】${nowTimeStr}_${targetJa}行.csv`);
         // write data
         await csvMaker.makeCsvData(finalJsonArray, bookColumns, filePath);
 
@@ -646,23 +647,20 @@ ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
         logger.debug(`authorscrape: scraping ${aozoraUrl}`);
         // move to top
         await puppScraper.doGo(aozoraUrl);
-        logger.debug('authorscrape: doAuthorScrape mode');
         // row loop number
         const rows: number[] = makeNumberRange(1, 7);
-        // selector exists
-        if (await puppScraper.doCheckSelector(mySelectors.TMPLINK_SELECTOR)) {
-          // insert no.
-          tmpArray.push(i.toString());
-        }
+        // insert no.
+        tmpArray.push(i.toString());
+
         // loop
         for await (const j of rows) {
           try {
-            logger.silly(`authorscrape: scraping No.${j}`);
+            logger.debug(`authorscrape: scraping No.${j}`);
             // selector
-            let finalLinkSelector: string = mySelectors.finallink(j);
+            let finalLinkSelector: string = mySelectors.authorlink(j);
             // selector exists
             if (!await puppScraper.doCheckSelector(finalLinkSelector)) {
-              logger.silly(`No.${j}: no selector`);
+              logger.debug(`No.${j}: no selector`);
               break;
             }
             // when title link
@@ -675,6 +673,7 @@ ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
             const targetstring: string = await puppScraper.doSingleEval(finalLinkSelector, 'innerHTML');
             // set to tmparray
             tmpArray.push(targetstring);
+            logger.debug(`authorscrape: ${targetstring}`);
             // wait 0.5 sec
             await puppScraper.doWaitFor(500);
 
@@ -817,9 +816,9 @@ ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
                       await puppScraper.doWaitFor(500);
                       // wait and click
                       const targetstring: string = await puppScraper.doSingleEval(finalLinkSelector, 'innerHTML');
-                      logger.silly(`titlescrape: ${targetstring}`);
                       // set to tmparray
                       tmpArray.push(targetstring);
+                      logger.debug(`titlescrape: ${targetstring}`);
                       // wait 0.5 sec
                       await puppScraper.doWaitFor(500);
 
@@ -879,12 +878,10 @@ ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
 
           });
           logger.debug('titlescrape: making csv...');
-          // filename
-          const fileName: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 8);
           // nowtime
           const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
           // csv filename
-          const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【title】${nowTimeStr}-${fileName}_${targetJa}行.csv`);
+          const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【title】${nowTimeStr}_${targetJa}行.csv`);
           // write data
           await csvMaker.makeCsvData(finalJsonArray, myColumns.TITLE_COLUMNS, filePath);
         }
@@ -947,13 +944,14 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
               logger.debug(`category: scraping ${aozoraUrl}`);
               // move to top
               await puppScraper.doGo(aozoraUrl);
-              logger.debug('category: doUrlScrape mode');
               // loop number
               const links: number[] = makeNumberRange(myNums.FIRST_PAGE_ROWS, myNums.MAX_PAGE_ROWS);
 
               // loop
               for await (const k of links) {
                 try {
+                  // category
+                  let targetstring: string
                   // empty array
                   let tmpObj: { [key: string]: string } = {
                     No: '', // number
@@ -961,6 +959,7 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
                   };
                   // book no
                   const targetno: string = await puppScraper.doSingleEval(mySelectors.nolink(k), 'innerHTML');
+                  // set no
                   tmpObj.No = targetno;
                   // selector
                   const finalLinkSelector: string = mySelectors.finallink(k);
@@ -978,17 +977,24 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
                       await puppScraper.doClick(finalLinkSelector),
                     ]);
                     // wait and click
-                    const targetstring: string = await puppScraper.doSingleEval(mySelectors.CATEGORYLINK_SELECTOR, 'innerHTML');
+                    targetstring = await puppScraper.doSingleEval(mySelectors.CATEGORYLINK_SELECTOR, 'innerHTML');
+                    // if blank reget
+                    if (targetstring.includes('仮名') || targetstring.includes('年')) {
+                      targetstring = '';
+                    } else if (targetstring == '') {
+                      targetstring = await puppScraper.doSingleEval(mySelectors.CATEGORYSUBLINK_SELECTOR, 'innerHTML');
+                    }
+                    // set category
                     tmpObj.category = targetstring;
-                    // set to tmparray
+                    // push into tmp array
                     finalArray.push(tmpObj);
-                    console.log(tmpObj);
+                    logger.debug(`category: ${targetstring}`);
                     // go back
                     await puppScraper.doGoBack();
 
                   } else {
                     // error
-                    throw new Error('err4: no download link');
+                    throw new Error('err4: no page link');
                   }
 
                 } catch (err1: unknown) {
@@ -998,7 +1004,7 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
                   // URL
                   event.sender.send('statusUpdate', {
                     status: `${targetJa} 行`,
-                    target: `downloading No.${k}`
+                    target: `getting No.${k}`
                   });
                 }
               }
@@ -1010,20 +1016,20 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
             }
           }
         }
+        // nowtime
+        const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
+        // csv filename
+        const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【category】${nowTimeStr}_${targetJa}行.csv`);
+        // write data
+        await csvMaker.makeCsvData(finalArray, myColumns.CATEGORY_COLUMNS, filePath);
 
       } catch (err3: unknown) {
         logger.error(err3);
       }
     }
-    // nowtime
-    const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
-    // csv filename
-    const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【category】${nowTimeStr}-${arg}.csv`);
-    // write data
-    await csvMaker.makeCsvData(finalArray, myColumns.CATEGORY_COLUMNS, filePath);
     // end message
     showCompleteMessage();
-    logger.info('ipc: download completed');
+    logger.info('ipc: category completed');
 
   } catch (e: unknown) {
     logger.error(e);
