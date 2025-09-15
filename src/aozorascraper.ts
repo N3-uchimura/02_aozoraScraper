@@ -955,12 +955,15 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
                   // empty array
                   let tmpObj: { [key: string]: string } = {
                     No: '', // number
+                    kana: '', // kana
                     category: '', // category
                   };
                   // book no
                   const targetno: string = await puppScraper.doSingleEval(mySelectors.nolink(k), 'innerHTML');
                   // set no
                   tmpObj.No = targetno;
+                  // set no
+                  tmpObj.kana = targetno;
                   // selector
                   const finalLinkSelector: string = mySelectors.finallink(k);
                   // wait for 2sec
@@ -1016,17 +1019,18 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
             }
           }
         }
-        // nowtime
-        const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
-        // csv filename
-        const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【category】${nowTimeStr}_${targetJa}行.csv`);
-        // write data
-        await csvMaker.makeCsvData(finalArray, myColumns.CATEGORY_COLUMNS, filePath);
+
 
       } catch (err3: unknown) {
         logger.error(err3);
       }
     }
+    // nowtime
+    const nowTimeStr: string = (new Date).toISOString().replace(/[^\d]/g, '').slice(0, 14);
+    // csv filename
+    const filePath: string = path.join(globalRootPath, myConst.OUTPUT_PATH, `【category】${nowTimeStr}_${arg}行.csv`);
+    // write data
+    await csvMaker.makeCsvData(finalArray, myColumns.CATEGORY_COLUMNS, filePath);
     // end message
     showCompleteMessage();
     logger.info('ipc: category completed');
@@ -1067,7 +1071,7 @@ const getArrayNum = (arg: string): number[] => {
     throw new Error('download: not index');
   }
   // for loop
-  return makeNumberRange(numIndex, numIndex + 4);
+  return makeNumberRange(numIndex, numIndex + 5);
 }
 
 // comp message

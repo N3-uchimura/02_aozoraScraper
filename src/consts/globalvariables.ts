@@ -43,7 +43,7 @@ export namespace myColumns {
   ];
 
   export const CATEGORY_COLUMNS: string[] = [
-    'No', 'category'
+    'No', 'kana', 'category'
   ];
 }
 
