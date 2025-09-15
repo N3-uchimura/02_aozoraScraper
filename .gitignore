@@ -7,3 +7,4 @@ package-lock.json
 /csv/
 man.env
 appx_setting.json
+/dist/
