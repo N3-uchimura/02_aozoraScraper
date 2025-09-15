@@ -1004,7 +1004,7 @@ ipcMain.on('categoryscrape', async (event: any, arg: any): Promise<void> => {
                   // URL
                   event.sender.send('statusUpdate', {
                     status: `${targetJa} 行`,
-                    target: `getting No.${k}`
+                    target: `getting No.${j}-${k}`
                   });
                 }
               }
