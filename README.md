@@ -46,10 +46,12 @@ Windows10 ~
 - GetCategories: Get all book's category (ex. NDC K913).
 
 2. Set options.
-   - Select target 'kana' (exept for GetAuthors).
-     - all: Get all data.
-     - others: Get only target 'kana'.
-   - Select min and max for scraping. (only for GetAuthors).
+
+- Select target 'kana' (exept for GetAuthors).
+  - all: Get all data.
+  - others: Get only target 'kana'.
+- Select min and max for scraping. (only for GetAuthors).
+
 3. Press "Scraping" button.
 4. All finished, csv files will be on "resources/output" directory.
 
