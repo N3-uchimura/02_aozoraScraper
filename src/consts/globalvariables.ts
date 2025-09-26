@@ -31,7 +31,7 @@ export namespace myNums {
 // columns
 export namespace myColumns {
   export const BOOK_COLUMNS: string[] = [
-    'No', 'bookname', 'booknameruby'
+    'No', 'bookname', 'booknameruby', 'category'
   ];
 
   export const AUTHOR_COLUMNS: string[] = [
@@ -43,7 +43,7 @@ export namespace myColumns {
   ];
 
   export const CATEGORY_COLUMNS: string[] = [
-    'No', 'kana', 'category'
+    'No', 'bookname', 'category'
   ];
 }
 
