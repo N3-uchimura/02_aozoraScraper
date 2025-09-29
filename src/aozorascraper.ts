@@ -762,10 +762,12 @@ ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
 ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('ipc: titlescrape mode');
+
     // num data
     const numArray: number[] = getArrayNum(arg);
     // init scraper
     await puppScraper.init();
+    console.log(numArray);
 
     // URL
     for await (const i of numArray) {
@@ -919,21 +921,26 @@ const makeNumberRange = (start: number, end: number) => [...new Array(end - star
 
 // number array
 const getArrayNum = (arg: string): number[] => {
-  // numIndex
-  let numIndex: number = 0;
+  // startIndex
+  let startIndex: number = 0;
+  // lastIndex
+  let lastIndex: number = 0;
+  logger.debug(arg);
   // hit index
   if (arg == 'all') {
-    numIndex = 0;
+    startIndex = 0;
+    lastIndex = Object.values(myLinks.LINK_SELECTION).length - 1;
   } else {
-    numIndex = Object.values(myLinks.LINK_SELECTION).indexOf(arg);
+    startIndex = Object.values(myLinks.LINK_SELECTION).indexOf(arg);
+    lastIndex = startIndex + 5;
   }
   // not included
-  if (numIndex == -1) {
+  if (startIndex == -1) {
     // error
     throw new Error('download: not index');
   }
   // for loop
-  return makeNumberRange(numIndex, numIndex + 5);
+  return makeNumberRange(startIndex, lastIndex);
 }
 
 // comp message
