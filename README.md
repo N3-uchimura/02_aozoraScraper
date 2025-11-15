@@ -25,10 +25,13 @@ Windows10 ~
 
 1. Download zip or pull repository.
 2. Execute below on cmd.
+
    ```
    npm install
    npm start
    ```
+
+- node.js environment required.
 
 ### From exe
 

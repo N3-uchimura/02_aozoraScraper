@@ -762,15 +762,13 @@ ipcMain.on('authorscrape', async (event: any, arg: any): Promise<void> => {
 ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
   try {
     logger.info('ipc: titlescrape mode');
-
     // num data
     const numArray: number[] = getArrayNum(arg);
     // init scraper
     await puppScraper.init();
-    console.log(numArray);
 
     // URL
-    for await (const i of numArray) {
+    for await (const i of [11]) {
       try {
         // last array
         let wholeArray: any = [];
@@ -801,7 +799,7 @@ ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
               // row loop number
               const rows: number[] = makeNumberRange(myNums.FIRST_PAGE_ROWS, myNums.MAX_PAGE_ROWS);
               // column loop number
-              const columns: number[] = makeNumberRange(1, 6);
+              const columns: number[] = makeNumberRange(1, 7);
 
               // loop
               for await (const j of rows) {

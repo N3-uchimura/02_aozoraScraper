@@ -29,10 +29,13 @@ Windows10 ~
    cd C:\home
    ```
 3. 以下のコマンドを実行します。
+
    ```
    npm install
    npm start
    ```
+
+- node.js の実行環境が必要です。
 
 ### From exe
 
