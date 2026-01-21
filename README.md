@@ -41,8 +41,9 @@ Windows10 ~
 ## Usage
 
 ※ Root Directory is
-all：「C:\Program Files\aozoraeditor」
-user：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor」
+
+- all：「C:\Program Files\aozoraeditor」
+- user：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor」
 
 1. Select mode.
 
