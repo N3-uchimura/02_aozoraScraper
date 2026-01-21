@@ -40,7 +40,7 @@ Windows10 ~
 
 ## Usage
 
-※ Root Directory is
+0. Root Directory is
 
 - all：「C:\Program Files\aozoraeditor」
 - user：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor」

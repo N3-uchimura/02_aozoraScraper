@@ -44,7 +44,7 @@ Windows10 ~
 
 ## Usage
 
-※ルートフォルダは
+0. ルートフォルダは
 
 - 全体インストール：「C:\Program Files\aozoraeditor」
 - ユーザインストール：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor」です。
