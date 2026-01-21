@@ -40,6 +40,10 @@ Windows10 ~
 
 ## Usage
 
+※ Root Directory is
+all：「C:\Program Files\aozoraeditor」
+user：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor」
+
 1. Select mode.
 
 - GetFiles: Get zip files which contain book's txt data. Download to "resources/output" directory.
