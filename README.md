@@ -51,7 +51,6 @@ Windows10 ~
 - GetBooks: Get all book data (name, nameruby).
 - GetAuthors: Get all author data (name, birthday, bod, about).
 - GetTitles: Get all book's data (name, format, authorname, translator).
-- GetCategories: Get all book's category (ex. NDC K913).
 
 2. Set options.
 
