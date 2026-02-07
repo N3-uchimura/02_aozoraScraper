@@ -12,7 +12,10 @@
 <body>
   <h1 id="maintitle">Aozora Scraper</h1>
   <div class="operation_area">
-    <h3 id="scraping">Scraping</h3>
+    <div class="operation_area">
+      <button id="open_button" class="button-g button-6 button-wide" value="open"
+        onclick="gotoOpen()">Open</button>
+    </div>
     <div>
       <input id="file" type="radio" name="mode" value="file" onchange="radioChanged(this.value)" checked><label
         id="filelabel" for="file">GetFile</label>
@@ -63,8 +66,11 @@
         <option value="a-z">a-z</option>
       </select>
     </div>
-    <button id="scraping_button" class="button-g button-wide" value="scraping" onclick="gotoScrape();">Scraping</button>
   </div>
+  <div class="operation_area">
+    <button id="scraping_button" class="button-g button-wide" value="scraping" onclick="gotoScrape();">Scrape</button><br><br>
+    <button id="pause_button" class="button-g button-5 button-wide" onclick="pauseScrape();">Pause</button>
+    </div>
   <div class="operation_area">
     <h3 id="config">Config</h3>
     <button id="config_button" class="button-g button-6 button-wide" value="config"
@@ -87,6 +93,7 @@
     // japanese
     const APPNAME_STR_JA = '青空スクレイパー';
     const SCRAPING_STR_JA = 'スクレイピング';
+    const OPENDIR_STR_JA = 'フォルダ開く';
     const GETFILES_STR_JA = 'ファイル取得';
     const GETBOOKS_STR_JA = '作品取得';
     const GETAUTHORS_STR_JA = '著者取得';
@@ -95,10 +102,12 @@
     const ENDNUM_STR_JA = '終了位置(2-2410)';
     const CONFIG_STR_JA = '設定';
     const STATUS_STR_JA = '状態:';
+    const PAUSE_STR_JA = '中断:';
     const EXIT_STR_JA = '終了';
     // english
     const APPNAME_STR_EN = 'Aozora Scraper';
-    const SCRAPING_STR_EN = 'Scraping';
+    const SCRAPING_STR_EN = 'Scrape';
+    const OPENDIR_STR_EN = 'OpenDir';
     const GETFILES_STR_EN = 'GetFiles';
     const GETBOOKS_STR_EN = 'GetBooks';
     const GETAUTHORS_STR_EN = 'GetAuthors';
@@ -107,6 +116,7 @@
     const ENDNUM_STR_EN = 'End number (2-2410)';
     const CONFIG_STR_EN = 'Config';
     const STATUS_STR_EN = 'status:';
+    const PAUSE_STR_EN = 'Pause';
     const EXIT_STR_EN = 'Exit';
     // doms
     const maintitleDom = document.getElementById("maintitle");
@@ -120,14 +130,15 @@
     const endHeadNumDom = document.getElementById("endnumHead");
     const startJaDom = document.getElementById("startja");
     const startEnDom = document.getElementById("starten");
-    const scrapeDom = document.getElementById('scraping');
     const getfileDom = document.getElementById('filelabel');
     const getbookDom = document.getElementById('booklabel');
     const getauthorDom = document.getElementById('authorlabel');
     const gettitleDom = document.getElementById('titlelabel');
+    const opendirButtonDom = document.getElementById('open_button');
     const scrapeButtonDom = document.getElementById('scraping_button');
     const configDom = document.getElementById('config');
     const configButtonDom = document.getElementById('config_button');
+    const pauseButtonDom = document.getElementById('pause_button');
     const pageDom = document.getElementById('targetpage');
     const statusHeadDom = document.getElementById('statushead');
     const statusDom = document.getElementById('status');
@@ -141,6 +152,7 @@
 
     // be ready
     window.api.on("ready", arg => {
+      console.log('ready');
       // change language
       changeLanguage(arg);
     });
@@ -215,6 +227,29 @@
       }
     }
 
+    // pause Scraping
+    const pauseScrape = () => {
+      try {
+        // pause Scraping
+        window.api.send("pause");
+      } catch (e) {
+        // error
+        console.log(e);
+      }
+    }
+
+    // goto open dir
+    const gotoOpen = () => {
+      try {
+        // scrape
+        window.api.send('open');
+
+      } catch (e) {
+        // error
+        console.log(e);
+      }
+    }
+
     // goto config page
     const gotoConfig = () => {
       try {
@@ -279,16 +314,17 @@
         selectEnDom.classList.add("display-none");
         document.title = APPNAME_STR_JA;
         maintitleDom.innerHTML = APPNAME_STR_JA;
-        scrapeDom.innerHTML = SCRAPING_STR_JA;
         getfileDom.innerHTML = GETFILES_STR_JA;
         getbookDom.innerHTML = GETBOOKS_STR_JA;
         getauthorDom.innerHTML = GETAUTHORS_STR_JA;
         gettitleDom.innerHTML = GETTITLES_STR_JA;
         startHeadNumDom.innerHTML = STARTNUM_STR_JA;
         endHeadNumDom.innerHTML = ENDNUM_STR_JA;
+        opendirButtonDom.innerHTML = OPENDIR_STR_JA;
         scrapeButtonDom.innerHTML = SCRAPING_STR_JA;
         configDom.innerHTML = CONFIG_STR_JA;
         configButtonDom.innerHTML = CONFIG_STR_JA;
+        pauseButtonDom.innerHTML = PAUSE_STR_JA;
         statusHeadDom.innerHTML = STATUS_STR_JA;
         exitButtonDom.innerHTML = EXIT_STR_JA;
         document.documentElement.setAttribute("lang", 'ja');
@@ -298,16 +334,17 @@
         selectEnDom.classList.remove("display-none");
         document.title = APPNAME_STR_EN;
         maintitleDom.innerHTML = APPNAME_STR_EN;
-        scrapeDom.innerHTML = SCRAPING_STR_EN;
         getfileDom.innerHTML = GETFILES_STR_EN;
         getbookDom.innerHTML = GETBOOKS_STR_EN;
         getauthorDom.innerHTML = GETAUTHORS_STR_EN;
         gettitleDom.innerHTML = GETTITLES_STR_EN;
         startHeadNumDom.innerHTML = STARTNUM_STR_EN;
         endHeadNumDom.innerHTML = ENDNUM_STR_EN;
+        opendirButtonDom.innerHTML = OPENDIR_STR_EN;
         scrapeButtonDom.innerHTML = SCRAPING_STR_EN;
         configDom.innerHTML = CONFIG_STR_EN;
         configButtonDom.innerHTML = CONFIG_STR_EN;
+        pauseButtonDom.innerHTML = PAUSE_STR_EN;
         statusHeadDom.innerHTML = STATUS_STR_EN;
         exitButtonDom.innerHTML = EXIT_STR_EN;
         document.documentElement.setAttribute("lang", 'en');

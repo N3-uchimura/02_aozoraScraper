@@ -1,37 +1,30 @@
 /**
- * ElScrapeCoreDEV.ts
+ * ElScrape.ts
  *
  * class：ElScrape
- * function：scraping site with native chrome
- * updated: 2025/09/14
+ * function：scraping site
+ * updated: 2026/01/23
  **/
 
 'use strict';
 
-// consts
-const USER_ROOT_PATH: string = process.env[process.platform == "win32" ? "USERPROFILE" : "HOME"] ?? ''; // user path
-const CHROME_EXEC_PATH1: string = 'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe'; // chrome.exe path1
-const CHROME_EXEC_PATH2: string = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'; // chrome.exe path2
-const CHROME_EXEC_PATH3: string = '\\AppData\\Local\\Google\\Chrome\\Application\\chrome.exe'; // chrome.exe path3
-const DISABLE_EXTENSIONS: string = '--disable-extensions'; // disable extension
-
 // define modules
-import * as path from "node:path"; // path
-import * as fs from "node:fs"; // fs
 import { setTimeout } from 'node:timers/promises'; // wait for seconds
-import puppeteer from 'puppeteer-core'; // Puppeteer for scraping
+import puppeteer from 'puppeteer'; // Puppeteer for scraping
+import fetch from 'cross-fetch'; // required 'fetch'
+import { PuppeteerBlocker } from '@ghostery/adblocker-puppeteer';
 
 //* Interfaces
 // puppeteer options
 interface puppOption {
   headless: boolean; // display mode
-  executablePath: string; // exepath
   ignoreDefaultArgs: string[]; // ignore extensions
   args: string[]; // args
 }
 
 // class
 export class Scrape {
+  static adblock: boolean; // adblock flg
   static logger: any; // logger
   static browser: any; // static browser
   static page: any; // static page
@@ -40,28 +33,39 @@ export class Scrape {
 
   // constractor
   constructor(logger: any) {
+    // loggeer instance
+    Scrape.logger = logger;
     // result
     this._result = false;
-    // set logger
-    Scrape.logger = logger;
-    Scrape.logger.silly('scrape: constructed');
+    Scrape.logger.debug('scrape: constructed');
   }
 
   // initialize
-  init(): Promise<void> {
+  init(flg: boolean = false): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: initialize mode.');
+        Scrape.logger.debug('scrape: initialize mode.');
+        // loggeer instance
+        Scrape.adblock = flg;
+        // pupp option
         const puppOptions: puppOption = {
           headless: true, // no display mode
-          executablePath: getChromePath(), // chrome.exe path
-          ignoreDefaultArgs: [DISABLE_EXTENSIONS], // ignore extensions
+          ignoreDefaultArgs: [], // ignore extensions
           args: [], // args
         };
         // lauch browser
         Scrape.browser = await puppeteer.launch(puppOptions);
         // get all tabs
         Scrape.page = (await Scrape.browser.pages())[0];
+
+        // use adblock
+        if (Scrape.adblock) {
+          // set adblock
+          PuppeteerBlocker.fromPrebuiltAdsAndTracking(fetch).then((blocker: any) => {
+            blocker.enableBlockingInPage(Scrape.page);
+          });
+        }
+
         // set viewport
         Scrape.page.setViewport({
           width: 1920,
@@ -69,7 +73,7 @@ export class Scrape {
         });
         // mimic agent
         await Scrape.page.setUserAgent(generateRandomUA());
-        Scrape.logger.silly('scrape: initialize finished.');
+        Scrape.logger.debug('scrape: initialize finished.');
         // resolved
         resolve();
 
@@ -85,7 +89,7 @@ export class Scrape {
   getUrl(): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: getUrl mode.');
+        Scrape.logger.debug('scrape: getUrl mode.');
         // resolved
         resolve(await Scrape.page.url());
 
@@ -101,7 +105,7 @@ export class Scrape {
   getTitle(): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: getTitle mode.');
+        Scrape.logger.debug('scrape: getTitle mode.');
         // resolved
         resolve(await Scrape.page.title);
 
@@ -117,7 +121,7 @@ export class Scrape {
   getHref(elem: string): Promise<string> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: getHref mode.');
+        Scrape.logger.debug('scrape: getHref mode.');
         // resolved
         resolve(await Scrape.page.$eval(elem, (elm: any) => elm.href));
 
@@ -133,7 +137,7 @@ export class Scrape {
   pressEnter(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: pressEnter mode.');
+        Scrape.logger.debug('scrape: pressEnter mode.');
         // press enter key
         await Scrape.page.keyboard.press('Enter');
         // resolved
@@ -151,14 +155,10 @@ export class Scrape {
   doGo(targetPage: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doGo mode.');
-        // wait for load
-        await Promise.all([
-          // goto target page
-          Scrape.page.goto(targetPage),
-          // wait for time
-          Scrape.page.waitForNavigation({ waitUntil: 'load' }),
-        ]);
+        Scrape.logger.debug('scrape: doGo mode.');
+        // goto target page
+        Scrape.logger.debug(targetPage);
+        await Scrape.page.goto(targetPage);
         // resolved
         resolve();
 
@@ -174,14 +174,9 @@ export class Scrape {
   doGoBack(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doGoBack mode.');
-        // wait for load
-        await Promise.all([
-          // go back
-          Scrape.page.goBack(),
-          // wait for time
-          Scrape.page.waitForNavigation({ waitUntil: 'load' }),
-        ]);
+        Scrape.logger.debug('scrape: doGoBack mode.');
+        // go back
+        await Scrape.page.goBack();
         // resolved
         resolve();
 
@@ -197,32 +192,9 @@ export class Scrape {
   doClick(elem: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doClick mode.');
-        // wait for load
-        await Promise.all([
-          // click target element
-          Scrape.page.$$eval(elem, (elements: any) => elements[0].click()),
-          // wait for time
-          Scrape.page.waitForNavigation({ waitUntil: 'load' }),
-        ]);
-        // resolved
-        resolve();
-
-      } catch (e: unknown) {
-        Scrape.logger.error(e);
-        // reject
-        reject();
-      }
-    });
-  }
-
-  // download
-  doDownload(elem: string): Promise<void> {
-    return new Promise(async (resolve, reject) => {
-      try {
-        Scrape.logger.silly('scrape: doClick mode.');
+        Scrape.logger.debug('scrape: doClick mode.');
         // click target element
-        Scrape.page.$$eval(elem, (elements: any) => elements[0].click());
+        await Scrape.page.$$eval(elem, (elements: any) => elements[0].click());
         // resolved
         resolve();
 
@@ -238,7 +210,7 @@ export class Scrape {
   doType(elem: string, value: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doType mode.');
+        Scrape.logger.debug('scrape: doType mode.');
         // type element on specified value
         await Scrape.page.type(elem, value, { delay: 100 });
         // resolved
@@ -256,7 +228,7 @@ export class Scrape {
   doClear(elem: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doClear mode.');
+        Scrape.logger.debug('scrape: doClear mode.');
         // clear the textbox
         await Scrape.page.$eval(elem, (element: any) => (element.value = ''));
         // resolved
@@ -271,17 +243,12 @@ export class Scrape {
   }
 
   // select
-  doSelect(elem: string, value: any): Promise<void> {
+  doSelect(elem: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doSelect mode.');
-        // wait for load
-        await Promise.all([
-          // select dropdown element
-          Scrape.page.select(elem, value),
-          // wait for time
-          Scrape.page.waitForNavigation({ waitUntil: 'load' }),
-        ]);
+        Scrape.logger.debug('scrape: doSelect mode.');
+        // select dropdown element
+        await Scrape.page.select(elem);
         // resolved
         resolve();
 
@@ -297,7 +264,7 @@ export class Scrape {
   doScreenshot(path: string): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doScreenshot mode.');
+        Scrape.logger.debug('scrape: doScreenshot mode.');
         // take screenshot of window
         await Scrape.page.screenshot({ path: path });
         // resolved
@@ -315,12 +282,13 @@ export class Scrape {
   doSingleEval(selector: string, property: string): Promise<string> {
     return new Promise(async (resolve, _) => {
       try {
+        //Scrape.logger.debug('scrape: doSingleEval mode.');
         // target item
         const exists: boolean = await Scrape.page.$eval(selector, () => true).catch(() => false);
 
         // no result
         if (!exists) {
-          Scrape.logger.silly('not exists');
+          Scrape.logger.debug('not exists');
           resolve('');
 
         } else {
@@ -359,6 +327,7 @@ export class Scrape {
   doMultiEval(selector: string, property: string): Promise<string[]> {
     return new Promise(async (resolve, reject) => {
       try {
+        //Scrape.logger.debug('scrape: doMultiEval mode.');
         // data set
         let datas: string[] = [];
         // target list
@@ -389,7 +358,7 @@ export class Scrape {
   doWaitFor(time: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doWaitFor mode.');
+        //Scrape.logger.debug('scrape: doWaitFor mode.');
         // wait for time
         await setTimeout(time);
         resolve();
@@ -406,11 +375,9 @@ export class Scrape {
   doWaitSelector(elem: string, time: number): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly("scrape: doWaitSelector start.");
+        Scrape.logger.debug('scrape: doWaitSelector mode.');
         // target item
-        const exists: boolean = await Scrape.page
-          .$eval(elem, () => true)
-          .catch(() => false);
+        const exists: boolean = await Scrape.page.$eval(elem, () => true).catch(() => false);
 
         // if element exists
         if (exists) {
@@ -419,11 +386,25 @@ export class Scrape {
           // resolved
           resolve();
         }
+
+      } catch (e: unknown) {
+        Scrape.logger.error(e);
         // reject
         reject();
-        Scrape.logger.silly("scrape: doWaitSelector end.");
+      }
+    });
+  }
+
+  // wait for navigaion
+  doWaitForNav(time: number): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        Scrape.logger.debug('scrape: doWaitForNav mode.');
+        // wait for time
+        await Scrape.page.waitForNavigation({ waitUntil: 'networkidle2', timeout: time });
+        resolve();
+
       } catch (e: unknown) {
-        // error
         Scrape.logger.error(e);
         // reject
         reject();
@@ -435,6 +416,7 @@ export class Scrape {
   doCheckSelector(elem: string): Promise<boolean> {
     return new Promise(async (resolve, reject) => {
       try {
+        //Scrape.logger.debug('scrape: doCheckSelector mode.');
         // target item
         const exists: boolean = await Scrape.page.$eval(elem, () => true).catch(() => false);
         // return true/false
@@ -452,11 +434,15 @@ export class Scrape {
   doClose(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doClose mode.');
-        // close browser
-        await Scrape.browser.close();
+        Scrape.logger.debug('scrape: doClose mode.');
         // close page
         await Scrape.page.close();
+        // disconnect browser
+        await Scrape.browser.disconnect();
+        // close browser
+        await Scrape.browser.close();
+        // forced destroy process
+        //await Scrape.browser.process()?.kill(9);
         // resolved
         resolve();
 
@@ -472,7 +458,7 @@ export class Scrape {
   doReload(): Promise<void> {
     return new Promise(async (resolve, reject) => {
       try {
-        Scrape.logger.silly('scrape: doReload mode.');
+        Scrape.logger.debug('scrape: doReload mode.');
         // close browser
         await Scrape.page.reload();
         // resolved
@@ -505,6 +491,24 @@ export class Scrape {
     });
   }
 
+  // download
+  doDownload(elem: string): Promise<void> {
+    return new Promise(async (resolve, reject) => {
+      try {
+        Scrape.logger.silly('scrape: doClick mode.');
+        // click target element
+        Scrape.page.$$eval(elem, (elements: any) => elements[0].click());
+        // resolved
+        resolve();
+
+      } catch (e: unknown) {
+        Scrape.logger.error(e);
+        // reject
+        reject();
+      }
+    });
+  }
+
   // set result
   set setSucceed(selector: string) {
     // Do something with val that takes time
@@ -514,31 +518,6 @@ export class Scrape {
   // get result
   get getSucceed(): boolean {
     return this._result;
-  }
-}
-
-// get chrome absolute path
-const getChromePath = (): string => {
-  // chrome tmp path
-  const tmpPath: string = path.join(USER_ROOT_PATH, CHROME_EXEC_PATH3);
-
-  // 32bit
-  if (fs.existsSync(CHROME_EXEC_PATH1)) {
-    return CHROME_EXEC_PATH1 ?? '';
-
-    // 64bit
-  } else if (fs.existsSync(CHROME_EXEC_PATH2)) {
-    return CHROME_EXEC_PATH2 ?? '';
-
-    // user path
-  } else if (fs.existsSync(tmpPath)) {
-    return tmpPath ?? '';
-
-    // error
-  } else {
-    // error logging
-    Scrape.logger.silly('16: no chrome path error');
-    return '';
   }
 }
 

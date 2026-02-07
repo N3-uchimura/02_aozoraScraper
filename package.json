@@ -1,7 +1,7 @@
 {
   "name": "aozora-scraper",
   "productName": "aozorascraper",
-  "version": "1.2.8-alpha.1",
+  "version": "1.2.8",
   "description": "Electron application aozorascraper",
   "main": "build/aozorascraper.js",
   "scripts": {
@@ -20,16 +20,19 @@
     "email": "uchimura@numthree.net"
   },
   "dependencies": {
+    "@ghostery/adblocker-puppeteer": "^2.13.4",
+    "cross-fetch": "^4.1.0",
     "csv": "^6.4.1",
     "electron-log": "^5.4.0",
-    "iconv-lite": "^0.6.3",
+    "iconv-lite": "^0.7.2",
     "node-cache": "^5.1.2",
-    "puppeteer-core": "^24.15.0",
+    "puppeteer": "^24.37.0",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
-    "electron": "^38.1.0"
+    "electron": "^39.5.1",
+    "electron-builder": "^26.4.0"
   },
   "build": {
     "appId": "net.numthree.aozorascraper",
@@ -53,7 +56,7 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "assets/aozora.png"
+      "icon": "assets/aozorascrape.png"
     },
     "nsis": {
       "oneClick": false,

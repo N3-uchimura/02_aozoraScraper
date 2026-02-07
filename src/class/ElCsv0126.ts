@@ -3,7 +3,7 @@
  *
  * name：ElCsv
  * function：CSV operation for electron
- * updated: 2025/04/14
+ * updated: 2026/01/26
  **/
 
 'use strict';
@@ -67,7 +67,7 @@ class CSV {
         }
       } catch (e) {
         // error
-        console.log(e);
+        CSV.logger.error(e);
         reject();
       }
     });
@@ -90,7 +90,7 @@ class CSV {
         resolve();
       } catch (e) {
         // error
-        console.log(e);
+        CSV.logger.error(e);
         reject();
       }
     });
@@ -111,29 +111,22 @@ class CSV {
           ]
         };
         // show file dialog
-        dialog
-          .showOpenDialog(mainWindow, dialogOptions)
-          .then((result: any) => {
-            // file exists
-            if (result.filePaths.length > 0) {
-              // resolved
-              resolve(result.filePaths);
+        const result: any = await dialog
+          .showOpenDialog(mainWindow, dialogOptions);
 
-              // no file
-            } else {
-              // rejected
-              reject(result.canceled);
-            }
-          })
-          .catch((err: unknown) => {
-            // error
-            console.log(err);
-            // rejected
-            reject('error');
-          });
+        // file exists
+        if (result.filePaths.length > 0) {
+          // resolved
+          resolve(result.filePaths);
+
+          // no file
+        } else {
+          // rejected
+          reject(result.canceled);
+        }
       } catch (e) {
         // error
-        console.log(e);
+        CSV.logger.error(e);
         // error type
         if (e instanceof Error) {
           reject('error');

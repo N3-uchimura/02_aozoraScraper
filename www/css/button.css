@@ -9,7 +9,7 @@
   position: relative;
   width: auto;
   min-height: 3rem;
-  margin: 0 0 0 10px;
+  margin: 0;
   padding: calc(.875rem-1px) calc(1.5rem-1px);
   vertical-align: baseline;
   display: inline-flex;

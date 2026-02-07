@@ -10,7 +10,7 @@ export namespace myConst {
   export const DEVMODE: boolean = true;
   export const COMPANY_NAME: string = "nthree";
   export const APP_NAME: string = "aozorascraper";
-  export const LOG_LEVEL: string = "debug";
+  export const LOG_LEVEL: string = "all";
   export const DEFAULT_ENCODING: string = "utf8";
   export const CSV_ENCODING: string = "SJIS";
   export const OUTPUT_PATH: string = "output";
@@ -41,18 +41,14 @@ export namespace myColumns {
   export const TITLE_COLUMNS: string[] = [
     'No', 'title', 'lettering', 'author', 'authorname', 'translator'
   ];
-
-  export const CATEGORY_COLUMNS: string[] = [
-    'No', 'bookname', 'category'
-  ];
 }
 
 // selectors
 export namespace mySelectors {
   export const ZIPLINK_SELECTOR: string = 'body > table.download > tbody > tr:nth-child(2) > td:nth-child(3) > a';
-  export const BOOKLINK_SELECTOR: string = `body > table:nth-child(4) > tbody > tr:nth-child(1) > td:nth-child(2)> font`;
-  export const BOOKRUBYLINK_SELECTOR: string = `body > table:nth-child(4) > tbody > tr:nth-child(2) > td:nth-child(2)`;
-  export const TMPLINK_SELECTOR: string = `body > table > tbody > tr:nth-child(1) > td:nth-child(2)`;
+  export const BOOKLINK_SELECTOR: string = 'body > table:nth-child(4) > tbody > tr:nth-child(1) > td:nth-child(2)> font';
+  export const BOOKRUBYLINK_SELECTOR: string = 'body > table:nth-child(4) > tbody > tr:nth-child(2) > td:nth-child(2)';
+  export const TMPLINK_SELECTOR: string = 'body > table > tbody > tr:nth-child(1) > td:nth-child(2)';
   export const CATEGORYLINK_SELECTOR: string = 'body > table:nth-child(8) > tbody > tr:nth-child(1) > td:nth-child(2)';
   export const CATEGORYSUBLINK_SELECTOR: string = 'body > table:nth-child(9) > tbody > tr:nth-child(1) > td:nth-child(2)';
   export const titlelink = (num1: number, num2: number): string => {
@@ -128,7 +124,7 @@ export namespace myLinks {
     う: 7,
     え: 5,
     お: 14,
-    か: 20,
+    か: 21,
     き: 14,
     く: 8,
     け: 8,
@@ -136,7 +132,7 @@ export namespace myLinks {
     さ: 11,
     し: 35,
     す: 5,
-    せ: 18,
+    せ: 19,
     そ: 6,
     た: 12,
     ち: 8,
@@ -148,7 +144,7 @@ export namespace myLinks {
     ぬ: 1,
     ね: 2,
     の: 3,
-    は: 17,
+    は: 18,
     ひ: 10,
     ふ: 14,
     へ: 4,
@@ -166,7 +162,7 @@ export namespace myLinks {
     る: 1,
     れ: 2,
     ろ: 3,
-    わ: 7,
+    わ: 8,
     A: 1,
   });
 }
