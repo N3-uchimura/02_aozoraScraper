@@ -42,12 +42,12 @@ Windows10 ~
 
 0. Press "OpenDir" and resouces directory below will be opened.
 
-- all：「C:\Program Files\aozoraeditor\resources\file\output」
-- user：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor\resources\file\output」
+- all：「C:\Program Files\aozoraeditor\resources\output」
+- user：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor\resources\output」
 
 1. Select mode.
 
-- GetFiles: Get zip files which contain book's txt data. Download to "resources\file\output" directory.
+- GetFiles: Get zip files which contain book's txt data. Download to "resources\output" directory.
 - GetBooks: Get all book data (name, nameruby).
 - GetAuthors: Get all author data (name, birthday, bod, about).
 - GetTitles: Get all book's data (name, format, authorname, translator).
@@ -60,7 +60,7 @@ Windows10 ~
 - Select min and max for scraping. (only for GetAuthors).
 
 3. Press "Scraping" button.
-4. All finished, csv files will be on "resources\file\output" directory.
+4. All finished, csv files will be on "resources\output" directory.
 
 ## Features
 
