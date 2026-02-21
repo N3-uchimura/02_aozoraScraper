@@ -46,12 +46,12 @@ Windows10 ~
 
 0. 「フォルダ開く」を押すと下記のフォルダが開きます。
 
-- 全体インストール：「C:\Program Files\aozoraeditor」
-- ユーザインストール：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor」です。
+- 全体インストール：「C:\Program Files\aozoraeditor\resources\file\output」
+- ユーザインストール：「C:\Users\xxxx\AppData\Local\Programs\aozoraeditor\resources\file\output」です。
 
 1. 以下のいずれかを選択します。
 
-- ファイル取得: 作品データ TXT ファイルを含んだ ZIP ファイルを、「resources/output」に保存します。
+- ファイル取得: 作品データ TXT ファイルを含んだ ZIP ファイルを、「resources\file\output」に保存します。
 - 作品取得: 作品データ取得 (作品名, 作品名かな)。
 - 著者取得: 著者データ取得 (著者名, 生日, 没日, 著者について)。
 - タイトル取得: 作品タイトル取得 (作品名, 字体・かな形式, 著者名, 訳・編者)。
@@ -65,7 +65,7 @@ Windows10 ~
 - 取得対象の著者番号を指定します。
 
 3. 「スクレイピング」ボタンを押します。
-4. 終了すると、csv ファイルが「resources/output」の中に保存されます。
+4. 終了すると、csv ファイルが「resources\file\output」の中に保存されます。
 
 ## Features
 

@@ -29,6 +29,9 @@
     "puppeteer": "^24.37.0",
     "typescript": "^5.8.3"
   },
+  "overrides": {
+    "minimatch": "10.2.2"
+  },
   "devDependencies": {
     "@types/node": "^24.1.0",
     "electron": "^39.5.1",

@@ -19,7 +19,7 @@ import { BrowserWindow, app, ipcMain, Tray, Menu, nativeImage } from 'electron';
 import NodeCache from 'node-cache'; // for cache
 import { Scrape } from './class/ElScrape0123'; // scraper
 import ELLogger from './class/ElLogger'; // logger
-import Dialog from './class/ElDialog0721'; // dialog
+import Dialog from './class/ElDialog1124'; // dialog
 import CSV from './class/ElCsv0126'; // csvmaker
 import MKDir from './class/ElMkdir0414'; // mdkir
 // log level
@@ -361,7 +361,7 @@ ipcMain.on("pause", async (_: any, __: any) => {
           tmpColumns = myColumns.TITLE_COLUMNS;
           break;
         default:
-          console.log("out of mode");
+          logger.debug("out of mode");
       }
       // only except for download
       if (globalMode > 1) {
@@ -995,8 +995,6 @@ ipcMain.on('titlescrape', async (event: any, arg: any): Promise<void> => {
                       await puppScraper.doWaitFor(500);
                       // wait and click
                       const targetstring: string = await puppScraper.doSingleEval(finalLinkSelector, 'innerHTML');
-                      console.log(targetColumn);
-                      console.log(targetstring);
                       // set to tmpObj
                       tmpObj[targetColumn] = targetstring;
 

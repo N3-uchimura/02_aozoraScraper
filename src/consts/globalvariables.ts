@@ -5,7 +5,7 @@
 **/
 
 /** const */
-// default
+// consts
 export namespace myConst {
   export const DEVMODE: boolean = true;
   export const COMPANY_NAME: string = "nthree";
@@ -18,7 +18,7 @@ export namespace myConst {
   export const DEF_AOZORA_BOOK_URL: string = 'https://www.aozora.gr.jp/index_pages/sakuhin';
 }
 
-// default
+// nums
 export namespace myNums {
   export const FIRST_BOOK_ROWS: number = 1;
   export const FIRST_PAGE_ROWS: number = 2;
