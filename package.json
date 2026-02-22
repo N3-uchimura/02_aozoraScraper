@@ -2,7 +2,7 @@
   "name": "aozora-scraper",
   "productName": "aozorascraper",
   "version": "1.2.9-alpha1",
-  "description": "Electron application aozorascraper",
+  "description": "application for scraping aozora bunko",
   "main": "build/aozorascraper.js",
   "scripts": {
     "build": "tsc && chcp 65001",
