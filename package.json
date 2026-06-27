@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc && chcp 65001",
     "start": "npm run build && electron .",
-    "build-win": "npm run build && electron-builder --win --x64"
+    "build-win": "npm run build && electron-builder --win --x64",
+    "build-win-publish": "npm run build && electron-builder --win --x64 --publish always"
   },
   "keywords": [
     "scraper",
@@ -24,6 +25,7 @@
     "cross-fetch": "^4.1.0",
     "csv": "^6.4.1",
     "electron-log": "^5.4.0",
+    "electron-updater": "^6.8.9",
     "iconv-lite": "^0.7.2",
     "node-cache": "^5.1.2",
     "puppeteer": "^24.37.0",
@@ -56,10 +58,24 @@
     },
     "win": {
       "target": "nsis",
-      "icon": "assets/aozorascrape.png"
+      "icon": "assets/aozorascrape.png",
+      "publish": [
+        {
+          "provider": "s3",
+          "bucket": "aozora",
+          "endpoint": "https://4311bc0768863ac48911aac35c7eca73.r2.cloudflarestorage.com"
+        }
+      ]
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": false,
+      "displayLanguageSelector": true,
+      "installerLanguages": [
+        "en_US",
+        "ja_JP"
+      ],
+      "multiLanguageInstaller": true,
       "allowToChangeInstallationDirectory": true
     }
   },

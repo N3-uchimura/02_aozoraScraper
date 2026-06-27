@@ -3,7 +3,6 @@
     "target": "es2021",
     /* Modules */
     "module": "commonjs",
-    "baseUrl": "./src",
     "outDir": "./build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -11,7 +10,8 @@
     "strict": true,
     /* Completeness */
     "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "rootDir": "./src"
     //"resolveJsonModule": true,
   },
   "include": ["src/**/*"],

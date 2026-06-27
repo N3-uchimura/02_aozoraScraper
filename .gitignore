@@ -8,3 +8,4 @@ package-lock.json
 man.env
 appx_setting.json
 /dist/
+/const/secret.ts

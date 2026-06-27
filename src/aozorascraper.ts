@@ -9,6 +9,8 @@
 /// Constants
 // namespace
 import { myConst, myLinks, myNums, myColumns, mySelectors } from './consts/globalvariables';
+// namespace
+import { mySecret } from './consts/secret';
 
 /// Modules
 import * as path from 'node:path'; // path
@@ -16,6 +18,7 @@ import { existsSync } from 'node:fs'; // file system
 import { readFile, writeFile } from 'node:fs/promises'; // promise fs
 import { exec } from 'child_process'; // child process
 import { BrowserWindow, app, ipcMain, Tray, Menu, nativeImage } from 'electron'; // electron
+import { autoUpdater } from 'electron-updater';
 import NodeCache from 'node-cache'; // for cache
 import { Scrape } from './class/ElScrape0123'; // scraper
 import ELLogger from './class/ElLogger'; // logger
@@ -219,6 +222,84 @@ app.on('window-all-closed', (): void => {
   app.quit();
 });
 
+
+/* 更新設定 */
+// アップデート可能な場合
+autoUpdater.addListener('update-available', (event: any) => {
+  try {
+    logger.debug('アップデート可能');
+  } catch (e: unknown) {
+    logger.error(e);
+    // エラー
+    if (e instanceof Error) {
+      //  エラーメッセージ
+      dialogMaker.showmessage('エラー', `${e.stack}`);
+    }
+  }
+});
+
+// アップデート不可能な場合
+autoUpdater.addListener('update-not-available', () => {
+  try {
+    logger.debug('アップデート不可能');
+  } catch (e: unknown) {
+    logger.error(e);
+    // エラー
+    if (e instanceof Error) {
+      //  エラーメッセージ
+      dialogMaker.showmessage('エラー', `${e.stack}`);
+    }
+  }
+});
+
+// 失敗した場合
+autoUpdater.addListener('error', (error: unknown) => {
+  try {
+    // エラー
+    if (error instanceof Error) {
+      logger.debug(error.message);
+    }
+  } catch (e: unknown) {
+    logger.error(e);
+    // エラー
+    if (e instanceof Error) {
+      //  エラーメッセージ
+      dialogMaker.showmessage('エラー', `${e.stack}`);
+    }
+  }
+});
+
+// ダウンロード中
+autoUpdater.on('download-progress', (progressObj: any) => {
+  try {
+    logger.debug(`アップデート進行中: ${Math.floor(progressObj.percent)}%`);
+  } catch (e: unknown) {
+    logger.error(e);
+    // エラー
+    if (e instanceof Error) {
+      //  エラーメッセージ
+      dialogMaker.showmessage('エラー', `${e.stack}`);
+    }
+  }
+});
+
+// アップデート完了
+autoUpdater.addListener('update-downloaded', () => {
+  try {
+    logger.debug('アップデート完了');
+    // Install and Reboot
+    autoUpdater.quitAndInstall();
+    return true;
+  } catch (e: unknown) {
+    logger.error(e);
+    // エラー
+    if (e instanceof Error) {
+      //  エラーメッセージ
+      dialogMaker.showmessage('エラー', `${e.stack}`);
+    }
+  }
+});
+
 /*
  IPC
 */
@@ -226,6 +307,25 @@ app.on('window-all-closed', (): void => {
 ipcMain.on("beforeready", async (event: any, _: any): Promise<void> => {
   try {
     logger.info("app: beforeready app");
+    // 本番のみ
+    if (!myConst.DEVMODE) {
+      logger.debug('アップデート中...');
+      // 自動ダウンロード
+      autoUpdater.autoDownload = true;
+      // アップデート
+      autoUpdater.setFeedURL({
+        url: 'https://aozora.numthree.org/',
+        provider: 'generic',
+        useMultipleRangeRequest: false
+      })
+      // トークン
+      const token: string = mySecret.DEF_AOZORA_SECRET;
+      // トークン追加
+      autoUpdater.addAuthHeader(`Bearer ${token}`);
+      // 自動更新確認
+      autoUpdater.checkForUpdatesAndNotify();
+      logger.debug('アップデート完了');
+    }
     // language
     const language: string = cacheMaker.get('language') ?? 'japanese';
     // be ready
