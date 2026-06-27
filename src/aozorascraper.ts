@@ -494,7 +494,6 @@ ipcMain.on('download', async (event: any, arg: any): Promise<void> => {
               // loop number
               const links: number[] = makeNumberRange(myNums.FIRST_PAGE_ROWS, myNums.MAX_PAGE_ROWS);
 
-
               // loop
               for await (const k of links) {
                 try {
